@@ -9,7 +9,7 @@ public class MusicObject : MonoBehaviour
     private float v;
     private bool isSound = false;
     private bool isAutoPlay = false;
-    private float DEAD_LINE = -100.0f;
+    private float DEAD_LINE = -5.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,18 +22,19 @@ public class MusicObject : MonoBehaviour
 
     private void Update() {
         transform.Translate(0, 0, -v);
-        
+        //オートプレイだった場合は0ラインに来たら再生
         if ((this.transform.position.z <= 0)&&(!isSound)&&(isAutoPlay)) {
             sound();
             isSound = true;
         }
-        
-        if((!isAutoPlay)&&(this.transform.position.z <= DEAD_LINE)) {
+        //音楽が再生されておらず、deadLineを越えたらオブジェクト削除
+        if((this.transform.position.z <= DEAD_LINE)&&(!isSound)) {
             Destroy(this.gameObject);
         }
         
     }
 
+    //曲ならす
     void sound() {
         audio = this.GetComponent<AudioSource>();
         audio.PlayOneShot(audio.clip);
@@ -42,6 +43,7 @@ public class MusicObject : MonoBehaviour
         }));
     }
 
+    //hit tagのオブジェクトとぶつかったら音を鳴らしてヒットマークを出す
     void OnTriggerEnter(Collider other) {
         if ((other.gameObject.tag == "hit")&&(!isSound)) {
             transparentObject(this.gameObject);
@@ -51,10 +53,12 @@ public class MusicObject : MonoBehaviour
         }
     }
 
+    //オブジェクトをただ削除すると音も消えるので、縮小して消えたように見せる
     void transparentObject(GameObject obj) {
         this.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
     }
 
+    //ヒットスパーク
    void hit() {
         if (hitPrefab != null) {
             GameObject hitVFX = Instantiate(
@@ -73,6 +77,7 @@ public class MusicObject : MonoBehaviour
         }
     }
 
+    //音楽が鳴っている間活かす処理
     public delegate void functionType();
     private IEnumerator Checking(functionType callback) {
         while (true) {

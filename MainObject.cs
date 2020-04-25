@@ -6,35 +6,51 @@ using System.Text.RegularExpressions;
 
 public class MainObject : MonoBehaviour
 {
-    public bool isAutoPlay = true;
-    public GameObject musicObj;
-    public GameObject bgmObj;
-    public int FRAME_RATE;
-    public string music_folder;
-    public string music_bms;
-    public float MUSIC_WIDTH;
-    public int PLAY_KEY_NUM;
+    [SerializeField] public bool isAutoPlay = false;
+    [SerializeField] public int FRAME_RATE;
 
+    [SerializeField] private GameObject musicObjBlue;
+    [SerializeField] private GameObject musicObjRed;
+    [SerializeField] private GameObject musicObjOrange;
+    [SerializeField] private GameObject bgmObj;
+    [SerializeField] private string music_folder;
+    [SerializeField] private string music_bms;
+    [SerializeField] private float MUSIC_WIDTH;
+    [SerializeField] private int PLAY_KEY_NUM;
 
     public float musicObjVec;
+    private float musicObjSize = 0.3f;
+    private float musicObjY = 0;
     private int KEY_NUM = 30;
     private int MAX_OBJ_NUM = 100000;
     private bool isUpdate = false;
-    private Dictionary<string, AudioClip> dic_audio;
+    private Dictionary<string, AudioClip> dict_audio;
+    private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, string> dict_info;
     private string[,] list_music_data;
     private int frame_num = 0;
-    
+    private GameObject screenLeft;
+    private GameObject screenRight;
 
-    // Start is called before the first frame update
+    private void init() {
+        Application.targetFrameRate = FRAME_RATE;
+        dict_audio = new Dictionary<string, AudioClip>();
+        dict_image = new Dictionary<string, Sprite>();
+        list_music_data = new string[KEY_NUM, MAX_OBJ_NUM];
+        screenLeft = GameObject.Find("ScreenObjectLeft");
+        screenRight = GameObject.Find("ScreenObjectRight");
+    }
+
     void Start()
     {
-        Application.targetFrameRate = FRAME_RATE;
-        list_music_data = new string[KEY_NUM, MAX_OBJ_NUM];
+        init();
+
         string[] lines = read(music_folder + "/" + music_bms);
+
         dict_info = getInfomation(lines);
-        dic_audio = new Dictionary<string, AudioClip>();
-        dic_audio = readAudioFiles(lines);
+        dict_audio = readAudioFiles(lines);
+        dict_image = readImageFiles(lines);
+
         list_music_data = makeMusicData(
             lines, 
             int.Parse(dict_info["#BPM"]), 
@@ -50,10 +66,15 @@ public class MainObject : MonoBehaviour
         if (isUpdate) {
             playMusic(frame_num);
             frame_num++;
-        } 
+        }
+        //Bボタンが押されたら最初から
+        if (OVRInput.GetDown(OVRInput.Button.Two)) {
+            frame_num = 0;
+        }
     }
 
-    string[] read(string filePath) {
+    //bmsファイル読み込み
+    private string[] read(string filePath) {
         Debug.Log(filePath);
         TextAsset text = Resources.Load<TextAsset>(filePath);
         string allText = text.text;
@@ -61,7 +82,8 @@ public class MainObject : MonoBehaviour
         return allText.Split('\n');
     }
 
-    Dictionary<string, string> getInfomation(string[] list_string) {
+    //インフォメーション部分読み込み
+    private Dictionary<string, string> getInfomation(string[] list_string) {
         Dictionary<string, string> dict_info = new Dictionary<string, string>();
         foreach (string line in list_string) {
             if (line.Contains("#WAV")) break;
@@ -71,12 +93,12 @@ public class MainObject : MonoBehaviour
             string key = line.Substring(0, index);
             string value = line.Substring(index + 1);
             dict_info.Add(key, value);
-            //Debug.Log("key=" + key + " value=" + value);
         }
         return dict_info;
     }
 
-    Dictionary<string, AudioClip> readAudioFiles(string[] list_string) {
+    //曲ファイルをdictに格納
+    private Dictionary<string, AudioClip> readAudioFiles(string[] list_string) {
         Dictionary<string, AudioClip> dic_audio = new Dictionary<string, AudioClip>();
         foreach (string line in list_string) {
             if (line.Contains("#WAV")) {
@@ -86,14 +108,30 @@ public class MainObject : MonoBehaviour
                 wav_name = wav_name.Replace(".ogg", "");
                 AudioClip ac = Resources.Load<AudioClip>(music_folder + "/" + wav_name);
                 dic_audio.Add(command[0], ac);
-
             }
 
         }
         return dic_audio;
     }
 
-    string[,] makeMusicData(string[] list_lines, int BPM, int frame) {
+    //画像ファイルをdictに格納
+    private Dictionary<string, Sprite> readImageFiles(string[] list_string) {
+        Dictionary<string, Sprite> dict_image = new Dictionary<string, Sprite>();
+        foreach (string line in list_string) {
+            if (line.Contains("#BMP")) {
+                string tmp = line.Replace("#BMP", "");
+                string[] command = tmp.Split(' ');
+                string image_name = command[1].Replace(".bmp", "");
+                Sprite image = Resources.Load<Sprite>(music_folder + "/" + image_name);
+                dict_image.Add(command[0], image);
+            }
+
+        }
+        return dict_image;
+    }
+
+    //楽譜作成
+    private string[,] makeMusicData(string[] list_lines, int BPM, int frame) {
         string[,] list_music_data = new string[KEY_NUM, MAX_OBJ_NUM];
         float byoushi = 4;
         foreach (string line in list_lines) {
@@ -135,12 +173,13 @@ public class MainObject : MonoBehaviour
         return list_music_data;
     }
 
+    //数字だけかチェック
     bool isNum(string str_num) {
         return Regex.IsMatch(str_num, "^[0-9]+$");
     }
 
     //音楽再生本体
-    void playMusic(int frame_no) {
+    private void playMusic(int frame_no) {
         for(int i = 0; i < KEY_NUM; i++) {
             if (list_music_data[i, frame_no] != null) {
                 //バックグラウンド、musicObjが発生するkeyだった場合の処理
@@ -151,13 +190,25 @@ public class MainObject : MonoBehaviour
                 if (i == 2) {
                     processChangeByoushi(i, frame_no);
                 }
+                //画像変更の際
+                if(i == 4) {
+                    string imageName = list_music_data[i, frame_no];
+                    changeScreen(screenLeft, imageName);
+                    changeScreen(screenRight, imageName);
+                }
             }
            
         }
 
     }
 
-    void processChangeByoushi(int key_no, int frame_no) {
+    private void changeScreen(GameObject obj, string imageName) {
+        SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
+        s.sprite = dict_image[imageName];
+    }
+
+    //途中で何拍子かが変更された時に呼ばれる
+    private void processChangeByoushi(int key_no, int frame_no) {
         float changeByoushi = float.Parse(list_music_data[key_no, frame_no]);
         setMusicObjVec(
             4 * changeByoushi,
@@ -166,8 +217,8 @@ public class MainObject : MonoBehaviour
         );
     }
 
-   
-    void processMusicPart(int key_no, int frame_no) {
+   //音楽のkeyだった場合の処理
+    private void processMusicPart(int key_no, int frame_no) {
             if (list_music_data[key_no, frame_no].Contains(",")) {
                 string[] command = list_music_data[key_no, frame_no].Split(',');
                 foreach (string wav_name in command) {
@@ -182,27 +233,46 @@ public class MainObject : MonoBehaviour
     }
 
     //MusicObject作成
-    void makeMusicObject(int key_no, int frame_no, string wav_name) {
-        GameObject obj = (key_no == 1) ? bgmObj : musicObj;
+    private void makeMusicObject(int key_no, int frame_no, string wav_name) {
+        GameObject obj;
+        if(key_no == 1) {
+            obj = bgmObj;
+        }
+        else if (key_no == 16) {
+            obj = musicObjRed;
+        }
+        else if(key_no % 2 == 1) {
+            obj = musicObjBlue;
+        }
+        else {
+            obj = musicObjOrange;
+        }
         GameObject musicObject = Instantiate(obj) as GameObject;
+        musicObject.transform.localScale = new Vector3(
+            musicObjSize,
+            musicObjSize,
+            musicObjSize
+        );
         AudioSource audioSource = musicObject.GetComponent<AudioSource>();
-        audioSource.clip = dic_audio[wav_name];
+        audioSource.clip = dict_audio[wav_name];
         setPosition(musicObject, key_no);
     }
 
-    //位置を設定
-    void setPosition(GameObject obj, int key_no) {
-        float x = -(MUSIC_WIDTH / 2) + ((MUSIC_WIDTH / (PLAY_KEY_NUM - 1)) * (key_no - 10));
+    //MusicObjectの位置を設定
+    private void setPosition(GameObject obj, int key_no) {
+        float w = MUSIC_WIDTH / (PLAY_KEY_NUM - 1);
+        float x = -(MUSIC_WIDTH / 2) + (w * (key_no - 10));
+        x -= w;
         Debug.Log("x=" + x);
         obj.transform.position = new Vector3(
             x,
-            0.0f,
+            musicObjY,
             this.transform.position.z
         );
     }
 
     //MusicObjectが進む速さを求める
-    float setMusicObjVec(float byoushi, int frame, int BPM) {
+    private float setMusicObjVec(float byoushi, int frame, int BPM) {
         float z = this.transform.position.z;
         float how_long_syousetsu = 60 * byoushi * frame / BPM;
         return z / how_long_syousetsu;
