@@ -18,7 +18,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -118,7 +118,16 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1860375860738744, guid: 276ab3ffb8ec1034e95169be39eb630a, type: 3}
       propertyPath: m_Name
-      value: vfx_Projectile_WaterBall01_Blue_Mobile Variant
+      value: MusicObjectBlue
+      objectReference: {fileID: 0}
+    - target: {fileID: 1860375860738744, guid: 276ab3ffb8ec1034e95169be39eb630a, type: 3}
+      propertyPath: m_TagString
+      value: MusicObject
+      objectReference: {fileID: 0}
+    - target: {fileID: 114396528320584840, guid: 276ab3ffb8ec1034e95169be39eb630a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4728770385079454, guid: 276ab3ffb8ec1034e95169be39eb630a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -175,11 +184,6 @@ PrefabInstance:
     - target: {fileID: 4728770385079454, guid: 276ab3ffb8ec1034e95169be39eb630a, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114396528320584840, guid: 276ab3ffb8ec1034e95169be39eb630a,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 65661025039034308, guid: 276ab3ffb8ec1034e95169be39eb630a,
         type: 3}

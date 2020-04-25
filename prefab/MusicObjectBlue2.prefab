@@ -11,14 +11,14 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -119,6 +119,10 @@ PrefabInstance:
     - target: {fileID: 1688169060713526, guid: f7133224dcb423e4ba67f8d9693c01c5, type: 3}
       propertyPath: m_Name
       value: MusicObjectBlue2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1688169060713526, guid: f7133224dcb423e4ba67f8d9693c01c5, type: 3}
+      propertyPath: m_TagString
+      value: MusicObject
       objectReference: {fileID: 0}
     - target: {fileID: 4112127263303818, guid: f7133224dcb423e4ba67f8d9693c01c5, type: 3}
       propertyPath: m_LocalPosition.x

@@ -11,14 +11,14 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -118,7 +118,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1652799960059976, guid: 3fda2b3c82a8c8149a167a69819276c0, type: 3}
       propertyPath: m_Name
-      value: vfx_Projectile_Orb02_Green_Mobile
+      value: MusicObjectGreen2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1652799960059976, guid: 3fda2b3c82a8c8149a167a69819276c0, type: 3}
+      propertyPath: m_TagString
+      value: MusicObject
       objectReference: {fileID: 0}
     - target: {fileID: 4650220963280550, guid: 3fda2b3c82a8c8149a167a69819276c0, type: 3}
       propertyPath: m_LocalPosition.x
