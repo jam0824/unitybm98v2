@@ -29,6 +29,7 @@ public class MainObject : MonoBehaviour
     private Dictionary<string, string> dict_info;
     private string[,] list_music_data;
     private int frame_num = 0;
+    private int nullCount = 0;
     private GameObject screenLeft;
     private GameObject screenRight;
 
@@ -70,8 +71,16 @@ public class MainObject : MonoBehaviour
         //Bボタンが押されたら最初から
         if (OVRInput.GetDown(OVRInput.Button.Two)) {
             frame_num = 0;
+            nullCount = 0;
+        }
+
+        if(nullCount == FRAME_RATE * 3) {
+            finish();
         }
     }
+
+    
+
 
     //bmsファイル読み込み
     private string[] read(string filePath) {
@@ -180,6 +189,7 @@ public class MainObject : MonoBehaviour
 
     //音楽再生本体
     private void playMusic(int frame_no) {
+        bool isNull = true;
         for(int i = 0; i < KEY_NUM; i++) {
             if (list_music_data[i, frame_no] != null) {
                 //バックグラウンド、musicObjが発生するkeyだった場合の処理
@@ -196,8 +206,15 @@ public class MainObject : MonoBehaviour
                     changeScreen(screenLeft, imageName);
                     changeScreen(screenRight, imageName);
                 }
+                isNull = false;
             }
-           
+        }
+
+        if (isNull) {
+            nullCount++;
+        }
+        else {
+            nullCount = 0;
         }
 
     }
@@ -276,6 +293,13 @@ public class MainObject : MonoBehaviour
         float z = this.transform.position.z;
         float how_long_syousetsu = 60 * byoushi * frame / BPM;
         return z / how_long_syousetsu;
+    }
+
+    //曲終了処理
+    void finish() {
+        AudioSource audioSource = this.GetComponent<AudioSource>();
+        audioSource.clip = Resources.Load<AudioClip>("src/success");
+        audioSource.PlayOneShot(audioSource.clip);
     }
 
 }

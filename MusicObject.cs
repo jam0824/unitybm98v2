@@ -5,7 +5,11 @@ using UnityEngine;
 public class MusicObject : MonoBehaviour
 {
     public GameObject hitPrefab;
+    private float GOOD_LINE = 2.0f;
+    private float GREAT_LINE = 1.0f;
+    private bool isPoor = false;
     private AudioSource audio;
+    private UiController ui;
     private float v;
     private bool isSound = false;
     private bool isAutoPlay = false;
@@ -17,6 +21,7 @@ public class MusicObject : MonoBehaviour
         MainObject m = mainObject.GetComponent<MainObject>();
         v = m.musicObjVec;
         isAutoPlay = m.isAutoPlay;
+        ui = GameObject.Find("UiArea").GetComponent<UiController>();
         
     }
 
@@ -27,9 +32,17 @@ public class MusicObject : MonoBehaviour
             sound();
             isSound = true;
         }
-        //音楽が再生されておらず、deadLineを越えたらオブジェクト削除
-        if((this.transform.position.z <= DEAD_LINE)&&(!isSound)) {
-            Destroy(this.gameObject);
+        //音楽が再生されておらず後ろに行ってしまったら
+        if(!isSound) {
+            if ((this.transform.position.z < -GOOD_LINE) && (!isPoor)) {
+                ui.setCombo(0);
+                ui.setStatus("poor");
+                isPoor = true;
+            }
+
+            if(this.transform.position.z <= DEAD_LINE) {
+                Destroy(this.gameObject);
+            }
         }
         
     }
@@ -47,6 +60,7 @@ public class MusicObject : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         if ((other.gameObject.tag == "hit")&&(!isSound)) {
             transparentObject(this.gameObject);
+            judge();
             hit();
             sound();
             isSound = true;
@@ -56,6 +70,14 @@ public class MusicObject : MonoBehaviour
     //オブジェクトをただ削除すると音も消えるので、縮小して消えたように見せる
     void transparentObject(GameObject obj) {
         this.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+    }
+
+    //結果の判定
+    void judge() {
+        ui.addCombo();
+        float z = Mathf.Abs(this.transform.position.z);
+        if (z < 1.0f) ui.setStatus("good");
+        if (z < 0.5f) ui.setStatus("great");
     }
 
     //ヒットスパーク
