@@ -1,0 +1,145 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MusicPlay : MonoBehaviour
+{
+    private string[,] list_music_data;
+    private Dictionary<string, Sprite> dict_image;
+    private Dictionary<string, AudioClip> dict_audio;
+
+    private MusicPlayManager musicPlayManager;
+    private GameObject screenLeft;
+    private GameObject screenRight;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        musicPlayManager = this.GetComponent<MusicPlayManager>();
+        screenLeft = GameObject.Find("ScreenObjectLeft");
+        screenRight = GameObject.Find("ScreenObjectRight");
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void setDictAudio(Dictionary<string, AudioClip> dict_audio) {
+        this.dict_audio = dict_audio;
+    }
+    public void setDictImage(Dictionary<string, Sprite> dict_image) {
+        this.dict_image = dict_image;
+    }
+
+    public void setListMusicData(string[,] list_music_data) {
+        this.list_music_data = list_music_data;
+    }
+
+    
+
+    //音楽再生本体
+    public bool playMusic(int frame_no) {
+        bool isNull = true;
+        for (int i = 0; i < musicPlayManager.getKeyNum(); i++) {
+            if (list_music_data[i, frame_no] != null) {
+                //バックグラウンド、musicObjが発生するkeyだった場合の処理
+                if ((i == 1) || ((i > 9) && (i < 20))) {
+                    processMusicPart(i, frame_no);
+                }
+                //拍子変更の際
+                if (i == 2) {
+                    processChangeByoushi(i, frame_no);
+                }
+                //画像変更の際
+                if (i == 4) {
+                    string imageName = list_music_data[i, frame_no];
+                    changeScreen(screenLeft, imageName);
+                    changeScreen(screenRight, imageName);
+                }
+                isNull = false;
+            }
+        }
+
+        return isNull;
+    }
+
+    private void changeScreen(GameObject obj, string imageName) {
+        SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
+        s.sprite = dict_image[imageName];
+    }
+
+    //途中で何拍子かが変更された時に呼ばれる
+    private void processChangeByoushi(int key_no, int frame_no) {
+        float changeByoushi = float.Parse(list_music_data[key_no, frame_no]);
+        setMusicObjVec(
+            4 * changeByoushi,
+            musicPlayManager.FRAME_RATE,
+            musicPlayManager.getBpm()
+        );
+    }
+
+    //MusicObjectが進む速さを求める
+    public float setMusicObjVec(float byoushi, int frame, int BPM) {
+        float z = this.transform.position.z;
+        float how_long_syousetsu = 60 * byoushi * frame / BPM;
+        return z / how_long_syousetsu;
+    }
+
+    //音楽のkeyだった場合の処理
+    private void processMusicPart(int key_no, int frame_no) {
+        if (list_music_data[key_no, frame_no].Contains(",")) {
+            string[] command = list_music_data[key_no, frame_no].Split(',');
+            foreach (string wav_name in command) {
+                makeMusicObject(key_no, frame_no, wav_name);
+            }
+        }
+        else {
+            string wav_name = list_music_data[key_no, frame_no];
+            makeMusicObject(key_no, frame_no, wav_name);
+        }
+
+    }
+
+    //MusicObject作成
+    private void makeMusicObject(int key_no, int frame_no, string wav_name) {
+        GameObject obj;
+        if (key_no == 1) {
+            obj = musicPlayManager.bgmObj;
+        }
+        else if (key_no == 16) {
+            obj = musicPlayManager.musicObjRed;
+        }
+        else if (key_no % 2 == 1) {
+            obj = musicPlayManager.musicObjBlue;
+        }
+        else {
+            obj = musicPlayManager.musicObjOrange;
+        }
+        GameObject musicObject = Instantiate(obj) as GameObject;
+        musicObject.transform.localScale = new Vector3(
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE
+        );
+        AudioSource audioSource = musicObject.GetComponent<AudioSource>();
+        audioSource.clip = dict_audio[wav_name];
+        setPosition(musicObject, key_no);
+    }
+
+    //MusicObjectの位置を設定
+    private void setPosition(GameObject obj, int key_no) {
+        float w = musicPlayManager.MUSIC_WIDTH / (musicPlayManager.PLAY_KEY_NUM - 1);
+        float x = -(musicPlayManager.MUSIC_WIDTH / 2) + (w * (key_no - 10));
+        x -= w;
+        Debug.Log("x=" + x);
+        obj.transform.position = new Vector3(
+            x,
+            musicPlayManager.MUSIC_OBJ_Y,
+            this.transform.position.z
+        );
+    }
+}

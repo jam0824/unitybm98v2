@@ -9,9 +9,9 @@ public class BgmObject : MonoBehaviour
     private bool isSound = false;
     // Start is called before the first frame update
     void Start() {
-        GameObject mainObject = GameObject.Find("MainObject");
-        MainObject m = mainObject.GetComponent<MainObject>();
-        v = m.musicObjVec;
+        GameObject mainObject = GameObject.Find("MusicPlayManager");
+        MusicPlayManager m = mainObject.GetComponent<MusicPlayManager>();
+        v = m.getMusicObjVec();
 
     }
 

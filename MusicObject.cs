@@ -5,8 +5,8 @@ using UnityEngine;
 public class MusicObject : MonoBehaviour
 {
     public GameObject hitPrefab;
-    private float GOOD_LINE = 2.0f;
-    private float GREAT_LINE = 1.0f;
+    private float GOOD_LINE;
+    private float GREAT_LINE;
     private bool isPoor = false;
     private AudioSource audio;
     private UiController ui;
@@ -17,10 +17,12 @@ public class MusicObject : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject mainObject = GameObject.Find("MainObject");
-        MainObject m = mainObject.GetComponent<MainObject>();
-        v = m.musicObjVec;
+        GameObject mainObject = GameObject.Find("MusicPlayManager");
+        MusicPlayManager m = mainObject.GetComponent<MusicPlayManager>();
+        v = m.getMusicObjVec();
         isAutoPlay = m.isAutoPlay;
+        GOOD_LINE = m.GOOD_LINE;
+        GREAT_LINE = m.GREAT_LINE;
         ui = GameObject.Find("UiArea").GetComponent<UiController>();
         
     }
