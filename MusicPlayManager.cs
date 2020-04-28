@@ -32,6 +32,8 @@ public class MusicPlayManager : MonoBehaviour
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
 
+    //private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/";
+    private string MUSIC_FOLDER_PATH = "/storage/emulated/0/unitybm98/";
     public int getBpm() {
         return this.BPM;
     }
@@ -62,7 +64,7 @@ public class MusicPlayManager : MonoBehaviour
     {
         init();
 
-        string[] lines = bmsConverter.read(music_folder + "/" + music_bms);
+        string[] lines = bmsConverter.read(MUSIC_FOLDER_PATH + music_folder + "/" + music_bms);
 
         dict_info = bmsConverter.getInfomation(lines);
         BPM = int.Parse(dict_info["#BPM"]);
@@ -75,10 +77,10 @@ public class MusicPlayManager : MonoBehaviour
             )
         );
         musicPlay.setDictAudio(
-            bmsConverter.readAudioFiles(lines, music_folder)
+            bmsConverter.readAudioFiles(lines, MUSIC_FOLDER_PATH + music_folder)
         );
         musicPlay.setDictImage(
-            bmsConverter.readImageFiles(lines, music_folder)
+            bmsConverter.readImageFiles(lines, MUSIC_FOLDER_PATH + music_folder)
         );
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
         isUpdate = true;
@@ -95,6 +97,11 @@ public class MusicPlayManager : MonoBehaviour
             else {
                 nullCount = 0;
             }
+            
+            if (nullCount == FRAME_RATE * 3) {
+                isUpdate = false;
+                finish();
+            }
             frame_num++;
         }
         //Bボタンが押されたら最初から
@@ -103,9 +110,7 @@ public class MusicPlayManager : MonoBehaviour
             nullCount = 0;
         }
 
-        if(nullCount == FRAME_RATE * 3) {
-            finish();
-        }
+        
     }
 
     //曲終了処理

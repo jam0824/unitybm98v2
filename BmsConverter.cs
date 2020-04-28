@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using System.IO;
+using B83.Image.BMP;
 
 public class BmsConverter : MonoBehaviour
 {
@@ -18,10 +20,7 @@ public class BmsConverter : MonoBehaviour
     //bmsファイル読み込み
     public string[] read(string filePath) {
         Debug.Log(filePath);
-        TextAsset text = Resources.Load<TextAsset>(filePath);
-        string allText = text.text;
-        allText = allText.Replace("\r", "");
-        return allText.Split('\n');
+        return File.ReadAllLines(filePath);
     }
 
     //インフォメーション部分読み込み
@@ -46,14 +45,21 @@ public class BmsConverter : MonoBehaviour
             if (line.Contains("#WAV")) {
                 string tmp = line.Replace("#WAV", "");
                 string[] command = tmp.Split(' ');
-                string wav_name = command[1].Replace(".wav", "");
-                wav_name = wav_name.Replace(".ogg", "");
-                AudioClip ac = Resources.Load<AudioClip>(music_folder + "/" + wav_name);
-                dic_audio.Add(command[0], ac);
+                
+                dic_audio.Add(command[0], getAudioClip(music_folder + "/" + command[1]));
             }
 
         }
         return dic_audio;
+    }
+
+    //曲ファイルを外部から読み込む
+    private AudioClip getAudioClip(string fileName) {
+        using (WWW www = new WWW("file:///" + fileName)) {
+            while (!www.isDone) {
+            }
+            return www.GetAudioClip(false, false);
+        }
     }
 
     //画像ファイルをdictに格納
@@ -63,13 +69,34 @@ public class BmsConverter : MonoBehaviour
             if (line.Contains("#BMP")) {
                 string tmp = line.Replace("#BMP", "");
                 string[] command = tmp.Split(' ');
-                string image_name = command[1].Replace(".bmp", "");
-                Sprite image = Resources.Load<Sprite>(music_folder + "/" + image_name);
-                dict_image.Add(command[0], image);
+                dict_image.Add(command[0], getSprite(music_folder + "/" + command[1]));
             }
 
         }
         return dict_image;
+    }
+    
+    //画像ファイルを外部から読み込む
+    private Sprite getSprite(string filename) {
+        byte[] bytes = LoadBytes(filename);
+        BMPLoader loader = new BMPLoader();
+        var bmpImage = loader.LoadBMP(bytes);
+        Texture2D tex = bmpImage.ToTexture2D();
+        Sprite s = Sprite.Create(
+                        tex,
+                        new Rect(0f, 0f, tex.width, tex.height),
+                        new Vector2(0.5f, 0.5f)
+        );
+        return s;
+    }
+
+    //バイトで読み込む
+    private byte[] LoadBytes(string path) {
+        FileStream fs = new FileStream(path, FileMode.Open);
+        BinaryReader bin = new BinaryReader(fs);
+        byte[] result = bin.ReadBytes((int)bin.BaseStream.Length);
+        bin.Close();
+        return result;
     }
 
     //楽譜作成
