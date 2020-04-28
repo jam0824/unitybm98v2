@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ public class MusicPlay : MonoBehaviour
                 }
                 //拍子変更の際
                 if (i == 2) {
-                    processChangeByoushi(i, frame_no);
+                    //processChangeByoushi(i, frame_no);
                 }
                 //画像変更の際
                 if (i == 4) {
@@ -68,8 +69,15 @@ public class MusicPlay : MonoBehaviour
     }
 
     private void changeScreen(GameObject obj, string imageName) {
-        SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
-        s.sprite = dict_image[imageName];
+        try {
+            SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
+            s.sprite = dict_image[imageName];
+        }
+        catch (Exception e) {
+            Debug.LogError("#BMP" + imageName + "に該当する画像がありませんでした");
+            Debug.LogError(e);
+        }
+        
     }
 
     //途中で何拍子かが変更された時に呼ばれる
@@ -125,9 +133,16 @@ public class MusicPlay : MonoBehaviour
             musicPlayManager.MUSIC_OBJ_SIZE,
             musicPlayManager.MUSIC_OBJ_SIZE
         );
-        AudioSource audioSource = musicObject.GetComponent<AudioSource>();
-        audioSource.clip = dict_audio[wav_name];
-        setPosition(musicObject, key_no);
+        try {
+            AudioSource audioSource = musicObject.GetComponent<AudioSource>();
+            audioSource.clip = dict_audio[wav_name];
+            setPosition(musicObject, key_no);
+        }
+        catch (Exception e) {
+            Debug.LogError("#WAV" + wav_name + "に該当する音がありませんでした");
+            Debug.LogError(e);
+        }
+        
     }
 
     //MusicObjectの位置を設定

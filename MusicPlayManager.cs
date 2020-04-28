@@ -32,8 +32,8 @@ public class MusicPlayManager : MonoBehaviour
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
 
-    //private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/";
-    private string MUSIC_FOLDER_PATH = "/storage/emulated/0/unitybm98/";
+    private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
+    //private string MUSIC_FOLDER_PATH = "/storage/emulated/0/unitybm98/";
     public int getBpm() {
         return this.BPM;
     }

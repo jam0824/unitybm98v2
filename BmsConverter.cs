@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using System.IO;
 using B83.Image.BMP;
+using System.Web;
+using System;
 
 public class BmsConverter : MonoBehaviour
 {
@@ -44,9 +46,17 @@ public class BmsConverter : MonoBehaviour
         foreach (string line in list_string) {
             if (line.Contains("#WAV")) {
                 string tmp = line.Replace("#WAV", "");
-                string[] command = tmp.Split(' ');
+                int index = tmp.IndexOf(" ");
+                string key = tmp.Substring(0, index);
+                string value = tmp.Substring(index + 1);
+                try {
+                    dic_audio.Add(key, getAudioClip(music_folder + "/" + value));
+                }
+                catch (Exception e) {
+                    Debug.LogError("ファイル名：" + value + "が不正です");
+                    Debug.LogError(e);
+                }
                 
-                dic_audio.Add(command[0], getAudioClip(music_folder + "/" + command[1]));
             }
 
         }
@@ -55,11 +65,24 @@ public class BmsConverter : MonoBehaviour
 
     //曲ファイルを外部から読み込む
     private AudioClip getAudioClip(string fileName) {
-        using (WWW www = new WWW("file:///" + fileName)) {
-            while (!www.isDone) {
+        fileName = urlEncode(fileName);
+        try {
+            using (WWW www = new WWW("file:///" + fileName)) {
+                while (!www.isDone) {
+                }
+                return www.GetAudioClip(false, false);
             }
-            return www.GetAudioClip(false, false);
         }
+        catch(Exception e) {
+            Debug.LogError(e);
+            return null;
+        }
+    }
+
+    private string urlEncode(string fileName) {
+        fileName = fileName.Replace("#", "%23");
+        fileName = fileName.Replace(" ", "%20");
+        return fileName;
     }
 
     //画像ファイルをdictに格納
@@ -108,6 +131,7 @@ public class BmsConverter : MonoBehaviour
         float byoushi = 4;
         foreach (string line in list_lines) {
             if (line.Contains("#") && line.Contains(":")) {
+ 
                 string tmp = line.Replace("#", "");
                 string[] command = tmp.Split(':');
                 //取得したコマンドがNumでなければやり直し
@@ -130,7 +154,11 @@ public class BmsConverter : MonoBehaviour
                     if (wav != "00") {
                         int key_frame = Mathf.RoundToInt((syousetsu_no * how_long_syousetsu) + (how_long_onpu * (i / 2)));
 
-                        if (list_music_data[key_no, key_frame] == null) {
+                        if (key_no == 2) {
+                            list_music_data[key_no, key_frame] = command[1];
+                            break;
+                        }
+                        else if (list_music_data[key_no, key_frame] == null) {
                             list_music_data[key_no, key_frame] = wav;
                         }
                         else {
