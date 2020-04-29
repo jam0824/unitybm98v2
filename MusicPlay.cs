@@ -77,7 +77,6 @@ public class MusicPlay : MonoBehaviour
             Debug.LogError("#BMP" + imageName + "に該当する画像がありませんでした");
             Debug.LogError(e);
         }
-        
     }
 
     //途中で何拍子かが変更された時に呼ばれる
@@ -147,10 +146,10 @@ public class MusicPlay : MonoBehaviour
 
     //MusicObjectの位置を設定
     private void setPosition(GameObject obj, int key_no) {
-        float w = musicPlayManager.MUSIC_WIDTH / (musicPlayManager.PLAY_KEY_NUM - 1);
+        float w = musicPlayManager.MUSIC_WIDTH / (musicPlayManager.getPlayKeyNum());
         float x = -(musicPlayManager.MUSIC_WIDTH / 2) + (w * (key_no - 10));
         x -= w;
-        Debug.Log("x=" + x);
+        //Debug.Log("key=" + musicPlayManager.getPlayKeyNum() + " : w=" + w + " : x=" + x);
         obj.transform.position = new Vector3(
             x,
             musicPlayManager.MUSIC_OBJ_Y,

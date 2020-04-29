@@ -4,12 +4,15 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using System.IO;
 using B83.Image.BMP;
-using System.Web;
 using System;
+using FileController;
 
 public class BmsConverter : MonoBehaviour
 {
     private MusicPlayManager musicPlayManager;
+    public int playKeyNum = 5;
+    private string beforeChar = "#";
+    private string afterChar = "xxx";
 
 
     // Start is called before the first frame update
@@ -49,6 +52,9 @@ public class BmsConverter : MonoBehaviour
                 int index = tmp.IndexOf(" ");
                 string key = tmp.Substring(0, index);
                 string value = tmp.Substring(index + 1);
+                //ファイル名に使えない文字列が入っていたら変換する
+                value = changeNotUsingChar(value);
+
                 try {
                     dic_audio.Add(key, getAudioClip(music_folder + "/" + value));
                 }
@@ -61,6 +67,13 @@ public class BmsConverter : MonoBehaviour
 
         }
         return dic_audio;
+    }
+
+    private string changeNotUsingChar(string value) {
+        if (value.Contains(beforeChar)) {
+            value = value.Replace(beforeChar, afterChar);
+        }
+        return value;
     }
 
     //曲ファイルを外部から読み込む
@@ -139,6 +152,8 @@ public class BmsConverter : MonoBehaviour
 
                 int syousetsu_no = int.Parse(command[0].Substring(0, 3));
                 int key_no = int.Parse(command[0].Substring(3, 2));
+                //キー数の判定もしておく
+                judgeKeyNum(key_no);
 
                 //"02"拍子変更の際の処理
                 if (key_no == 2) byoushi = 4 * float.Parse(command[1]);
@@ -173,8 +188,26 @@ public class BmsConverter : MonoBehaviour
         return list_music_data;
     }
 
+    private void judgeKeyNum(int key_no) {
+        if((this.playKeyNum == 6)&&(key_no >= 17)&& (key_no <= 19)) {
+            this.playKeyNum = 7;
+        }
+    }
+
     //数字だけかチェック
     bool isNum(string str_num) {
         return Regex.IsMatch(str_num, "^[0-9]+$");
+    }
+
+    //ファイル名に#が入っているとandroidで読み取れなくなるため処理
+    public void changeFileName(string fullPath) {
+        List<string> files = fileController.getFileList(fullPath);
+        foreach (string name in files) {
+            Debug.Log("fileName = " + name);
+            if (name.Contains(beforeChar)) {
+                bool result = fileController.changeFileName(fullPath + "/" + name, beforeChar, afterChar);
+               
+            }
+        }
     }
 }

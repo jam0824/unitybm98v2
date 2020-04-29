@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class UiController : MonoBehaviour
 {
+    private MusicPlayManager musicPlayManager;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
@@ -25,6 +26,7 @@ public class UiController : MonoBehaviour
     }
 
     private void init() {
+        musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
         dict_object.Add("state", state);
