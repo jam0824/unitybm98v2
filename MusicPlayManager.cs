@@ -9,7 +9,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public int FRAME_RATE;
     [SerializeField] public float MUSIC_OBJ_SIZE;
     [SerializeField] public float MUSIC_OBJ_Y;
-    [SerializeField] public float DEC_CALORIE;
+    [SerializeField] public float DEC_M_PAR_CALORIE;
     [SerializeField] public GameObject musicObjBlue;
     [SerializeField] public GameObject musicObjRed;
     [SerializeField] public GameObject musicObjOrange;
@@ -34,7 +34,6 @@ public class MusicPlayManager : MonoBehaviour
     private int playKeyNum; //BMSのKEY数（5key or 7key)
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
-    //private string MUSIC_FOLDER_PATH = "/storage/emulated/0/unitybm98/";
 
     public int getBpm() {
         return this.BPM;
@@ -64,14 +63,20 @@ public class MusicPlayManager : MonoBehaviour
         this.movingDistance += dist;
     }
 
-    private void init() {
+    void Start() {
+        startGame(music_folder, music_bms);
+    }
+
+
+    private void init(string musicFolder, string musicBms) {
         Application.targetFrameRate = FRAME_RATE;
-        
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
-
         MUSIC_FOLDER_PATH = getFolderPath();
-       
+        frame_num = 0;
+        nullCount = 0;
+        this.music_folder = musicFolder;
+        this.music_bms = musicBms;
     }
 
     //テスト時とoculus時でパスを自動で変更
@@ -84,10 +89,9 @@ public class MusicPlayManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        init();
-        string[] lines = bmsConverter.read(MUSIC_FOLDER_PATH + music_folder + "/" + music_bms);
+    void startGame(string musicFolder, string musicBms) {
+        init(musicFolder, musicBms);
+        string[] lines = bmsConverter.read(MUSIC_FOLDER_PATH + musicFolder + "/" + musicBms);
 
         //インフォメーション部分読み込み
         dict_info = bmsConverter.getInfomation(lines);
@@ -101,14 +105,14 @@ public class MusicPlayManager : MonoBehaviour
             )
         );
         //androidで使えないファイル名がある場合の変換処理
-        bmsConverter.changeFileName(MUSIC_FOLDER_PATH + music_folder);
+        bmsConverter.changeFileName(MUSIC_FOLDER_PATH + musicFolder);
         //音データ読み込み
         musicPlay.setDictAudio(
-            bmsConverter.readAudioFiles(lines, MUSIC_FOLDER_PATH + music_folder)
+            bmsConverter.readAudioFiles(lines, MUSIC_FOLDER_PATH + musicFolder)
         );
         //画像データ読み込み
         musicPlay.setDictImage(
-            bmsConverter.readImageFiles(lines, MUSIC_FOLDER_PATH + music_folder)
+            bmsConverter.readImageFiles(lines, MUSIC_FOLDER_PATH + musicFolder)
         );
         //弾の速さ計算
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
@@ -137,9 +141,7 @@ public class MusicPlayManager : MonoBehaviour
         }
         //Bボタンが押されたら最初から
         if (OVRInput.GetDown(OVRInput.Button.Two)) {
-            frame_num = 0;
-            nullCount = 0;
-            isUpdate = true;
+            startGame(music_folder, music_bms);
         }
 
         

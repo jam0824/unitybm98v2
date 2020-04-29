@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UiController : MonoBehaviour
 {
     private MusicPlayManager musicPlayManager;
+    private Text calorieText;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
@@ -27,6 +29,7 @@ public class UiController : MonoBehaviour
 
     private void init() {
         musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
+        calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
         dict_object.Add("state", state);
@@ -50,6 +53,7 @@ public class UiController : MonoBehaviour
     void Update()
     {
         updateSpriteArea();
+        calorieText.text = redrawCalorieText();
     }
 
     string[] read(string filePath) {
@@ -154,5 +158,12 @@ public class UiController : MonoBehaviour
         var color = s.color;
         color.a = 1.0f;
         s.color = color;
+    }
+
+    string redrawCalorieText() {
+        float dist = musicPlayManager.getMovingDistance();
+        float calorie = dist / musicPlayManager.DEC_M_PAR_CALORIE;
+        
+        return "消費カロリー\n" + calorie.ToString("f1") + "kcal\n\n拳の総移動距離\n" + dist.ToString("f1") + "m";
     }
 }
