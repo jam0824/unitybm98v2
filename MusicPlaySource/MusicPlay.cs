@@ -50,24 +50,12 @@ public class MusicPlay : MonoBehaviour
             if (list_music_data[i, frame_no] != null) {
                 //BGMが発生するkeyだった場合の処理
                 if (i == 1) {
-                    processMusicPart(i, frame_no);
+                    processMusicPart(i, frame_no, sameTimingOfMusicObject);
                 }
                 //musicObjが発生するkeyだった場合の処理
-                if ((i >= 10) && (i <= 19)) {
-                    //オートモード
-                    if (i >= musicPlayManager.AUTO_KEY_NO) {
-                        processMusicPart(1, frame_no);
-                    }
-                    else {
-                        sameTimingOfMusicObject++;
-                        if(sameTimingOfMusicObject >= 3) {
-                            //3つ以上同時はBGMにする
-                            processMusicPart(1, frame_no);
-                        }
-                        else {
-                            processMusicPart(i, frame_no);
-                        }
-                    }
+                if ((i >= 10) && (i <= 29)) {
+                    sameTimingOfMusicObject++;
+                    processMusicPart(i, frame_no, sameTimingOfMusicObject);
                 }
                     //拍子変更の際
                 if (i == 2) {
@@ -124,18 +112,33 @@ public class MusicPlay : MonoBehaviour
     }
 
     //音楽のkeyだった場合の処理
-    private void processMusicPart(int key_no, int frame_no) {
+    private void processMusicPart(int key_no, int frame_no, int sameTimingOfMusicObject) {
         if (list_music_data[key_no, frame_no].Contains(",")) {
             string[] command = list_music_data[key_no, frame_no].Split(',');
             foreach (string wav_name in command) {
-                makeMusicObject(key_no, frame_no, wav_name);
+                int changeKey = changeKeyNo(key_no, sameTimingOfMusicObject);
+                makeMusicObject(changeKey, frame_no, wav_name);
             }
         }
         else {
             string wav_name = list_music_data[key_no, frame_no];
-            makeMusicObject(key_no, frame_no, wav_name);
+            int changeKey = changeKeyNo(key_no, sameTimingOfMusicObject);
+            makeMusicObject(changeKey, frame_no, wav_name);
         }
 
+    }
+
+    //同時押しとオート判定。判定した場合はBGMにする
+    private int changeKeyNo(int key_no, int sameTimingOfMusicObject) {
+        if (sameTimingOfMusicObject >= 3) {
+            return 1;
+        }
+        if (key_no >= musicPlayManager.AUTO_KEY_NO) {
+            return 1;
+        }
+        else {
+            return key_no;
+        }
     }
 
     //MusicObject作成

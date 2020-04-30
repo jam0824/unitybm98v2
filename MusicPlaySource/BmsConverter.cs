@@ -161,6 +161,7 @@ public class BmsConverter : MonoBehaviour
                 if (key_no == 2) {
                     byoushi = 4 * float.Parse(command[1]);
                     oldSyousetsuNo = syousetsu_no;
+                    continue;
                 }
                 if (oldSyousetsuNo != syousetsu_no) byoushi = 4;
 
@@ -171,6 +172,7 @@ public class BmsConverter : MonoBehaviour
                 //音符間の所要フレーム数を求める
                 float how_long_onpu = how_long_syousetsu / (command[1].Length / 2);
                 Debug.Log("音符の長さ=" + how_long_onpu);
+                Debug.Log("line = " + line);
 
                 for (int i = 0; i < command[1].Length; i += 2) {
                     string wav = command[1].Substring(i, 2);
@@ -197,6 +199,7 @@ public class BmsConverter : MonoBehaviour
         return list_music_data;
     }
 
+
     private void judgeKeyNum(int key_no) {
         if((this.playKeyNum == 6)&&(key_no >= 17)&& (key_no <= 19)) {
             this.playKeyNum = 7;
@@ -212,8 +215,8 @@ public class BmsConverter : MonoBehaviour
     public void changeFileName(string fullPath) {
         List<string> files = fileController.getFileList(fullPath);
         foreach (string name in files) {
-            Debug.Log("fileName = " + name);
             if (name.Contains(beforeChar)) {
+                Debug.Log("fileName = " + name);
                 bool result = fileController.changeFileName(fullPath + "/" + name, beforeChar, afterChar);
                
             }

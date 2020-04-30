@@ -143,7 +143,7 @@ public class MusicPlayManager : MonoBehaviour
                 nullCount = 0;
             }
             
-            if (nullCount == FRAME_RATE * 3) {
+            if (nullCount == FRAME_RATE * 5) {
                 isUpdate = false;
                 finish();
             }
