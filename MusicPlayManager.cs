@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class MusicPlayManager : MonoBehaviour
 {
@@ -19,7 +19,8 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public float GREAT_LINE; //GREAT判定の距離（絶対値）
     [SerializeField] private string music_folder;
     [SerializeField] private string music_bms;
-    
+
+    private Dictionary<string, string> dictMusicData;
     private float musicObjVec;
     private float movingDistance = 0;
     private int BPM;
@@ -34,6 +35,11 @@ public class MusicPlayManager : MonoBehaviour
     private int playKeyNum; //BMSのKEY数（5key or 7key)
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
+
+    //別のシーンから呼ばれた時に入れる
+    public void setDictMusicData(Dictionary<string, string> dictMusicData) {
+        this.dictMusicData = dictMusicData;
+    }
 
     public int getBpm() {
         return this.BPM;
@@ -62,21 +68,25 @@ public class MusicPlayManager : MonoBehaviour
     public void addMovingDistance(float dist) {
         this.movingDistance += dist;
     }
+    
 
     void Start() {
-        startGame(music_folder, music_bms);
+        init();
+        startGame(this.music_folder, this.music_bms);
     }
 
 
-    private void init(string musicFolder, string musicBms) {
+    private void init() {
         Application.targetFrameRate = FRAME_RATE;
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
         MUSIC_FOLDER_PATH = getFolderPath();
         frame_num = 0;
         nullCount = 0;
-        this.music_folder = musicFolder;
-        this.music_bms = musicBms;
+        if (dictMusicData != null) {
+            this.music_folder = dictMusicData["music_folder"];
+            this.music_bms = dictMusicData["music_bms"];
+        }
     }
 
     //テスト時とoculus時でパスを自動で変更
@@ -90,7 +100,6 @@ public class MusicPlayManager : MonoBehaviour
     }
 
     void startGame(string musicFolder, string musicBms) {
-        init(musicFolder, musicBms);
         string[] lines = bmsConverter.read(MUSIC_FOLDER_PATH + musicFolder + "/" + musicBms);
 
         //インフォメーション部分読み込み
@@ -139,9 +148,10 @@ public class MusicPlayManager : MonoBehaviour
             }
             frame_num++;
         }
-        //Bボタンが押されたら最初から
+        //Bボタンが押されたら曲選択に戻る
         if (OVRInput.GetDown(OVRInput.Button.Two)) {
-            startGame(music_folder, music_bms);
+            // シーン切り替え
+            SceneManager.LoadScene("MusicSelectScene");
         }
 
         
