@@ -17,6 +17,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public float MUSIC_WIDTH; //弾が飛んでくる範囲
     [SerializeField] public float GOOD_LINE; //GOOD判定の距離（絶対値）
     [SerializeField] public float GREAT_LINE; //GREAT判定の距離（絶対値）
+    [SerializeField] public int AUTO_KEY_NO; //このキー以降はオート
     [SerializeField] private string music_folder;
     [SerializeField] private string music_bms;
 

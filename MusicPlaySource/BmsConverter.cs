@@ -25,7 +25,7 @@ public class BmsConverter : MonoBehaviour
     //bmsファイル読み込み
     public string[] read(string filePath) {
         Debug.Log(filePath);
-        return File.ReadAllLines(filePath);
+        return fileController.fileConvertUTF8(filePath);
     }
 
     //インフォメーション部分読み込み
@@ -142,6 +142,7 @@ public class BmsConverter : MonoBehaviour
             musicPlayManager.getMaxObjNum()
         ];
         float byoushi = 4;
+        int oldSyousetsuNo = 0;
         foreach (string line in list_lines) {
             if (line.Contains("#") && line.Contains(":")) {
  
@@ -152,11 +153,17 @@ public class BmsConverter : MonoBehaviour
 
                 int syousetsu_no = int.Parse(command[0].Substring(0, 3));
                 int key_no = int.Parse(command[0].Substring(3, 2));
+
                 //キー数の判定もしておく
                 judgeKeyNum(key_no);
 
                 //"02"拍子変更の際の処理
-                if (key_no == 2) byoushi = 4 * float.Parse(command[1]);
+                if (key_no == 2) {
+                    byoushi = 4 * float.Parse(command[1]);
+                    oldSyousetsuNo = syousetsu_no;
+                }
+                if (oldSyousetsuNo != syousetsu_no) byoushi = 4;
+
                 //小節の所要フレーム数を求める
                 float how_long_syousetsu = 60 * byoushi * frame / BPM;
                 Debug.Log("小節の長さ=" + how_long_syousetsu);
@@ -164,11 +171,12 @@ public class BmsConverter : MonoBehaviour
                 //音符間の所要フレーム数を求める
                 float how_long_onpu = how_long_syousetsu / (command[1].Length / 2);
                 Debug.Log("音符の長さ=" + how_long_onpu);
+
                 for (int i = 0; i < command[1].Length; i += 2) {
                     string wav = command[1].Substring(i, 2);
                     if (wav != "00") {
-                        int key_frame = Mathf.RoundToInt((syousetsu_no * how_long_syousetsu) + (how_long_onpu * (i / 2)));
 
+                        int key_frame = Mathf.RoundToInt((syousetsu_no * how_long_syousetsu) + (how_long_onpu * (i / 2)));
                         if (key_no == 2) {
                             list_music_data[key_no, key_frame] = command[1];
                             break;
@@ -179,6 +187,7 @@ public class BmsConverter : MonoBehaviour
                         else {
                             list_music_data[key_no, key_frame] += "," + wav;
                         }
+
                     }
                 }
 

@@ -45,27 +45,54 @@ public class MusicPlay : MonoBehaviour
     //音楽再生本体
     public bool playMusic(int frame_no) {
         bool isNull = true;
+        int sameTimingOfMusicObject = 0;
         for (int i = 0; i < musicPlayManager.getKeyNum(); i++) {
             if (list_music_data[i, frame_no] != null) {
-                //バックグラウンド、musicObjが発生するkeyだった場合の処理
-                if ((i == 1) || ((i > 9) && (i < 20))) {
+                //BGMが発生するkeyだった場合の処理
+                if (i == 1) {
                     processMusicPart(i, frame_no);
                 }
-                //拍子変更の際
+                //musicObjが発生するkeyだった場合の処理
+                if ((i >= 10) && (i <= 19)) {
+                    //オートモード
+                    if (i >= musicPlayManager.AUTO_KEY_NO) {
+                        processMusicPart(1, frame_no);
+                    }
+                    else {
+                        sameTimingOfMusicObject++;
+                        if(sameTimingOfMusicObject >= 3) {
+                            //3つ以上同時はBGMにする
+                            processMusicPart(1, frame_no);
+                        }
+                        else {
+                            processMusicPart(i, frame_no);
+                        }
+                    }
+                }
+                    //拍子変更の際
                 if (i == 2) {
                     //processChangeByoushi(i, frame_no);
                 }
                 //画像変更の際
                 if (i == 4) {
-                    string imageName = list_music_data[i, frame_no];
-                    changeScreen(screenLeft, imageName);
-                    changeScreen(screenRight, imageName);
+                    processImagePart(i, frame_no);
                 }
                 isNull = false;
             }
         }
 
         return isNull;
+    }
+
+    private void processImagePart(int key_no, int frame_no) {
+        string imageName = list_music_data[key_no, frame_no];
+        //画像が同じフレームに複数設定される場合があるのでその際は最初の要素のみ取得
+        if (imageName.Contains(",")) {
+            string[] tmp = imageName.Split(',');
+            imageName = tmp[0];
+        }
+        changeScreen(screenLeft, imageName);
+        changeScreen(screenRight, imageName);
     }
 
     private void changeScreen(GameObject obj, string imageName) {

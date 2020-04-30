@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,17 +12,18 @@ public class MusicSelect : MonoBehaviour
     private Vector3 oldRecordPos;
     private AudioSource audioSource;
     private MusicSelectManager musicSelectManager;
-    private Dictionary<string, string> dictMusicData;
-    private int folderCount = 0;
+    
     private Text musicTitleText;
     private List<GameObject> listStars;
     private float moveCount = 0;
-    private float anim_v = 0.02f;
+    private float anim_v = 0.05f;
     public bool isRightAnim = true;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        
         musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicTitleText = GameObject.Find("MusicTitleArea").GetComponent<Text>();
         lightCanvas = GameObject.Find("LightCanvas");
@@ -34,57 +36,42 @@ public class MusicSelect : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (musicSelectManager.isReady) {
-          
-            if (dictMusicData == null) {
-                showInfomation(folderCount);
-            }
-                
-            if ((Input.GetKeyUp(KeyCode.RightArrow)) || 
-                (OVRInput.GetDown(OVRInput.Button.SecondaryThumbstickRight))) {
-                isRightAnim = nextMusic(true);
-            }
-            if ((Input.GetKeyUp(KeyCode.LeftArrow)) ||
-                (OVRInput.GetDown(OVRInput.Button.SecondaryThumbstickLeft))){
-                
-                isRightAnim = nextMusic(false);
-            }
-            if ((Input.GetKeyUp(KeyCode.Space))||
-                (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))) {
-                selectedMusic();
-            }
-            showInfomation(folderCount);
-        }
+        //アニメーションカウントがある間はアニメーションさせる
         if (moveCount > 0) animationRecord();
     }
 
-    //次の曲、前の曲
-    public bool nextMusic(bool isRightAnim) {
-        audioSource.PlayOneShot(audioSource.clip);
-        showInfomation(folderCount);
-        resetAnim();
-        moveCount = 1.0f;
-        if (isRightAnim) {
-            folderCount++;
-            if (folderCount >= musicSelectManager.listMusicDict.Count) folderCount = 0;
-            changeArrow("allow_right_blue");
-            return true;
-        }
-        else {
-            folderCount--;
-            if (folderCount < 0) folderCount = musicSelectManager.listMusicDict.Count - 1;
-            changeArrow("allow_left_blue");
-            return false;
-        }
+    //次の曲
+    public void nextMusic() {
+        if (moveCount > 0) return;
+        initMoveMusic();
+        musicSelectManager.folderCount++;
+        if (musicSelectManager.folderCount >= musicSelectManager.listMusicDict.Count)
+            musicSelectManager.folderCount = 0;
+        changeArrow("allow_right_blue");
+        showInfomation(musicSelectManager.getDictMusicData());
+        this.isRightAnim = true;
     }
 
-    //曲の決定
-    public void selectedMusic() {
-        // イベントに登録
-        SceneManager.sceneLoaded += GameSceneLoaded;
-        // シーン切り替え
-        SceneManager.LoadScene("MusicPlayScene");
+
+    //前の曲
+    public void prevMusic() {
+        if (moveCount > 0) return;
+        initMoveMusic();
+        musicSelectManager.folderCount--;
+        if (musicSelectManager.folderCount < 0)
+            musicSelectManager.folderCount = musicSelectManager.listMusicDict.Count - 1;
+        changeArrow("allow_left_blue");
+        showInfomation(musicSelectManager.getDictMusicData());
+        this.isRightAnim = false;
     }
+    //曲移動の際の初期化
+    public void initMoveMusic() {
+        audioSource.PlayOneShot(audioSource.clip);
+        resetAnim();
+        moveCount = 1.0f;
+    }
+
+    
 
     //バックのレコードのアニメーション
     void animationRecord() {
@@ -94,6 +81,7 @@ public class MusicSelect : MonoBehaviour
         recordSetTransform.position = pos;
 
         if (moveCount <= 0) {
+            moveCount = 0;
             resetAnim();
         }
     }
@@ -119,16 +107,20 @@ public class MusicSelect : MonoBehaviour
         Debug.Log("src/MusicSelect/" + arrowName);
     }
 
-    void showInfomation(int folderCount) {
-        dictMusicData = musicSelectManager.listMusicDict[folderCount];
-        GameObject.Find("MusicTitleArea").GetComponent<Text>().text = dictMusicData["#TITLE"];
-        GameObject.Find("MusicGenreArea").GetComponent<Text>().text = dictMusicData["#GENRE"];
-        GameObject.Find("MusicArtistArea").GetComponent<Text>().text = dictMusicData["#ARTIST"];
-        int dificurity = int.Parse(dictMusicData["#PLAYLEVEL"]);
-        showLevel(dificurity);
-        if (listStars != null) destroyStars();
-        listStars = showStar(dificurity);
-        Debug.Log("select : " + musicTitleText.text);
+    public void showInfomation(Dictionary<string, string> dictMusicData) {
+            if (dictMusicData.ContainsKey("#TITLE"))
+                GameObject.Find("MusicTitleArea").GetComponent<Text>().text = dictMusicData["#TITLE"];
+            if (dictMusicData.ContainsKey("#GENRE"))
+                GameObject.Find("MusicGenreArea").GetComponent<Text>().text = dictMusicData["#GENRE"];
+            if (dictMusicData.ContainsKey("#ARTIST"))
+                GameObject.Find("MusicArtistArea").GetComponent<Text>().text = dictMusicData["#ARTIST"];
+            if (dictMusicData.ContainsKey("#PLAYLEVEL")) {
+                int dificurity = int.Parse(dictMusicData["#PLAYLEVEL"]);
+                showLevel(dificurity);
+                if (listStars != null) destroyStars();
+                listStars = showStar(dificurity);
+            }
+            Debug.Log("select : " + musicTitleText.text);
     }
 
     void showLevel(int dificurity) {
@@ -173,10 +165,5 @@ public class MusicSelect : MonoBehaviour
         }
     }
 
-    private void GameSceneLoaded(Scene next, LoadSceneMode mode) {
-        // シーン切り替え後のスクリプトを取得
-        MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
-        musicPlayManager.setDictMusicData(dictMusicData);
-        SceneManager.sceneLoaded -= GameSceneLoaded;
-    }
+    
 }
