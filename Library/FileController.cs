@@ -28,6 +28,10 @@ namespace FileController {
             return listFolders;
         }
 
+        public static bool isFileExist(string fullPath) {
+            return File.Exists(fullPath);
+        }
+
         public static bool changeFileName(string fileName, string beforeChar, string afterChar) {
             if (!File.Exists(fileName)) return false;
             string afterFileName = fileName.Replace(beforeChar, afterChar);

@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class BgmObject : MonoBehaviour
 {
+    private MusicPlayManager m;
     private AudioSource audio;
     private float v;
     private bool isSound = false;
     // Start is called before the first frame update
     void Start() {
         GameObject mainObject = GameObject.Find("MusicPlayManager");
-        MusicPlayManager m = mainObject.GetComponent<MusicPlayManager>();
+        m = mainObject.GetComponent<MusicPlayManager>();
         v = m.getMusicObjVec();
 
     }
 
     private void Update() {
+        v = m.getMusicObjVec();
         transform.Translate(0, 0, -v);
         if ((this.transform.position.z <= 0) && (!isSound)) {
             sound();

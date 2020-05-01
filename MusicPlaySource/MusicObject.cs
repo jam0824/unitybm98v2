@@ -5,6 +5,7 @@ using UnityEngine;
 public class MusicObject : MonoBehaviour
 {
     public GameObject hitPrefab;
+    private MusicPlayManager m;
     private float GOOD_LINE;
     private float GREAT_LINE;
     private bool isPoor = false;
@@ -18,7 +19,7 @@ public class MusicObject : MonoBehaviour
     void Start()
     {
         GameObject mainObject = GameObject.Find("MusicPlayManager");
-        MusicPlayManager m = mainObject.GetComponent<MusicPlayManager>();
+        m = mainObject.GetComponent<MusicPlayManager>();
         v = m.getMusicObjVec();
         isAutoPlay = m.isAutoPlay;
         GOOD_LINE = m.GOOD_LINE;
@@ -28,6 +29,7 @@ public class MusicObject : MonoBehaviour
     }
 
     private void Update() {
+        v = m.getMusicObjVec();
         transform.Translate(0, 0, -v);
         //オートプレイだった場合は0ラインに来たら再生
         if ((this.transform.position.z <= 0)&&(!isSound)&&(isAutoPlay)) {

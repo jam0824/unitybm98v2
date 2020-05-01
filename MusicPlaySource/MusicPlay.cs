@@ -57,13 +57,15 @@ public class MusicPlay : MonoBehaviour
                     sameTimingOfMusicObject++;
                     processMusicPart(i, frame_no, sameTimingOfMusicObject);
                 }
-                    //拍子変更の際
-                if (i == 2) {
-                    //processChangeByoushi(i, frame_no);
-                }
+                
                 //画像変更の際
                 if (i == 4) {
                     processImagePart(i, frame_no);
+                }
+
+                //BPM変更の際
+                if (i == 3) {
+                    processBpmPart(i, frame_no);
                 }
                 isNull = false;
             }
@@ -72,12 +74,24 @@ public class MusicPlay : MonoBehaviour
         return isNull;
     }
 
+    //BPM変更の際は現在のBPMと変化後のBPMから割合を出して弾の速度を変更する
+    private void processBpmPart(int key_no, int frame_no) {
+        int changedBpm = Convert.ToInt32(list_music_data[key_no, frame_no], 16);
+        float rate = (float)changedBpm / (float)musicPlayManager.getBpm();
+        Debug.Log("BPMRate:" + rate);
+        musicPlayManager.setBpmChageRate(rate);
+    }
+
     private void processImagePart(int key_no, int frame_no) {
         string imageName = list_music_data[key_no, frame_no];
         //画像が同じフレームに複数設定される場合があるのでその際は最初の要素のみ取得
         if (imageName.Contains(",")) {
             string[] tmp = imageName.Split(',');
             imageName = tmp[0];
+        }
+        if (!dict_image.ContainsKey(imageName)) {
+            Debug.Log("#BMP" + imageName + "に該当する画像がありませんでした");
+            return;
         }
         changeScreen(screenLeft, imageName);
         changeScreen(screenRight, imageName);
@@ -89,25 +103,14 @@ public class MusicPlay : MonoBehaviour
             s.sprite = dict_image[imageName];
         }
         catch (Exception e) {
-            Debug.LogError("#BMP" + imageName + "に該当する画像がありませんでした");
-            Debug.LogError(e);
+            Debug.Log(e);
         }
     }
 
-    //途中で何拍子かが変更された時に呼ばれる
-    private void processChangeByoushi(int key_no, int frame_no) {
-        float changeByoushi = float.Parse(list_music_data[key_no, frame_no]);
-        setMusicObjVec(
-            4 * changeByoushi,
-            musicPlayManager.FRAME_RATE,
-            musicPlayManager.getBpm()
-        );
-    }
-
     //MusicObjectが進む速さを求める
-    public float setMusicObjVec(float byoushi, int frame, int BPM) {
+    public float setMusicObjVec(float byoushi, int frame, float BPM) {
         float z = this.transform.position.z;
-        float how_long_syousetsu = 60 * byoushi * frame / BPM;
+        float how_long_syousetsu = 60.0f * byoushi * (float)frame / BPM;
         return z / how_long_syousetsu;
     }
 
@@ -163,13 +166,16 @@ public class MusicPlay : MonoBehaviour
             musicPlayManager.MUSIC_OBJ_SIZE
         );
         try {
+            if (!dict_audio.ContainsKey(wav_name)) {
+                Debug.Log("#WAV" + wav_name + "に該当する音がありませんでした");
+                return;
+            }
             AudioSource audioSource = musicObject.GetComponent<AudioSource>();
             audioSource.clip = dict_audio[wav_name];
             setPosition(musicObject, key_no);
         }
         catch (Exception e) {
-            Debug.LogError("#WAV" + wav_name + "に該当する音がありませんでした");
-            Debug.LogError(e);
+            Debug.Log(e);
         }
         
     }
@@ -182,7 +188,7 @@ public class MusicPlay : MonoBehaviour
         //Debug.Log("key=" + musicPlayManager.getPlayKeyNum() + " : w=" + w + " : x=" + x);
         obj.transform.position = new Vector3(
             x,
-            musicPlayManager.MUSIC_OBJ_Y,
+            musicPlayManager.getMusicObjY(),
             this.transform.position.z
         );
     }

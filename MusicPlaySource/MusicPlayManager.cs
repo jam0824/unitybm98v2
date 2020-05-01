@@ -8,7 +8,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public bool isAutoPlay = false;
     [SerializeField] public int FRAME_RATE;
     [SerializeField] public float MUSIC_OBJ_SIZE;
-    [SerializeField] public float MUSIC_OBJ_Y;
+    [SerializeField] public float MUSIC_OBJ_Y_RATE;
     [SerializeField] public float DEC_M_PAR_CALORIE;
     [SerializeField] public GameObject musicObjBlue;
     [SerializeField] public GameObject musicObjRed;
@@ -21,10 +21,11 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] private string music_folder;
     [SerializeField] private string music_bms;
 
-    private Dictionary<string, string> dictMusicData;
+    private float MUSIC_OBJ_Y;
+    private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
     private float musicObjVec;
     private float movingDistance = 0;
-    private int BPM;
+    private float BPM;
     private int KEY_NUM = 30;
     private int MAX_OBJ_NUM = 100000;
     private bool isUpdate = false;
@@ -34,6 +35,7 @@ public class MusicPlayManager : MonoBehaviour
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
     private int playKeyNum; //BMSのKEY数（5key or 7key)
+    private float bpmChangeRate = 1.0f; //BPM変更の際に使用
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
 
@@ -42,7 +44,10 @@ public class MusicPlayManager : MonoBehaviour
         this.dictMusicData = dictMusicData;
     }
 
-    public int getBpm() {
+    public float getMusicObjY() {
+        return this.MUSIC_OBJ_Y;
+    }
+    public float getBpm() {
         return this.BPM;
     }
     public int getKeyNum() {
@@ -52,7 +57,7 @@ public class MusicPlayManager : MonoBehaviour
         return this.MAX_OBJ_NUM;
     }
     public float getMusicObjVec() {
-        return this.musicObjVec;
+        return this.musicObjVec * this.bpmChangeRate;
     }
     public float getMovingDistance() {
         return this.movingDistance;
@@ -65,6 +70,12 @@ public class MusicPlayManager : MonoBehaviour
     }
     public void setMusic_bms(string music_bms) {
         this.music_bms = music_bms;
+    }
+    public void setBpmChageRate(float rate) {
+        this.bpmChangeRate = rate;
+    }
+    public float getBpmChageRate() {
+        return this.bpmChangeRate;
     }
     public void addMovingDistance(float dist) {
         this.movingDistance += dist;
@@ -82,6 +93,7 @@ public class MusicPlayManager : MonoBehaviour
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
         MUSIC_FOLDER_PATH = getFolderPath();
+        MUSIC_OBJ_Y = getMusicObjectY();
         frame_num = 0;
         nullCount = 0;
         if (dictMusicData != null) {
@@ -100,12 +112,18 @@ public class MusicPlayManager : MonoBehaviour
         }
     }
 
+    //ヘッドセットからの距離でMusicObjectの高さを決定する
+    private float getMusicObjectY() {
+        float y = GameObject.Find("CenterEyeAnchor").transform.position.y;
+        return y * MUSIC_OBJ_Y_RATE;
+    }
+
     void startGame(string musicFolder, string musicBms) {
         string[] lines = bmsConverter.read(MUSIC_FOLDER_PATH + musicFolder + "/" + musicBms);
 
         //インフォメーション部分読み込み
         dict_info = bmsConverter.getInfomation(lines);
-        BPM = int.Parse(dict_info["#BPM"]);
+        BPM = float.Parse(dict_info["#BPM"]);
         //曲データを作成
         musicPlay.setListMusicData(
             bmsConverter.makeMusicData(
