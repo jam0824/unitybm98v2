@@ -6,29 +6,23 @@ using UnityEngine.UI;
 public class UiController : MonoBehaviour
 {
     private MusicPlayManager musicPlayManager;
+    private MusicPlayData musicPlayData;
     private Text calorieText;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
     private string oldStatus = "";
-
-    private int combo_num = 0;
     private string oldComboNum = "";
 
     private bool isRedraw = false;
 
-    public void addCombo() {
-        combo_num++;
-    }
-    public void setCombo(int c) {
-        combo_num = c;
-    }
     public void setStatus(string stat) {
         status = stat;
     }
 
     private void init() {
         musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
+        musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
         calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
@@ -73,7 +67,7 @@ public class UiController : MonoBehaviour
     }
 
     private void updateSpriteArea() {
-        if (combo_num == 0) {
+        if (musicPlayData.getComboNum() == 0) {
             changeState();
             deleteSpriteArea();
         }
@@ -98,8 +92,8 @@ public class UiController : MonoBehaviour
         
     }
     private void changeNum() {
-
-        string str_combo_num = fill(combo_num.ToString(), "x", 4);
+        int comboNum = musicPlayData.getComboNum();
+        string str_combo_num = fill(comboNum.ToString(), "x", 4);
 
         if(oldComboNum != str_combo_num) {
             for (int i = 0; i < str_combo_num.Length; i++) {
@@ -163,7 +157,8 @@ public class UiController : MonoBehaviour
     string redrawCalorieText() {
         float dist = musicPlayManager.getMovingDistance();
         float calorie = dist / musicPlayManager.DEC_M_PAR_CALORIE;
-        
+        musicPlayData.setCalorie(calorie);
+
         return "消費カロリー\n" + calorie.ToString("f1") + "kcal\n\n拳の総移動距離\n" + dist.ToString("f1") + "m";
     }
 }

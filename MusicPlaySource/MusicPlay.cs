@@ -10,6 +10,7 @@ public class MusicPlay : MonoBehaviour
     private Dictionary<string, AudioClip> dict_audio;
 
     private MusicPlayManager musicPlayManager;
+    private MusicPlayData musicPlayData;
     private GameObject screenLeft;
     private GameObject screenRight;
 
@@ -18,6 +19,7 @@ public class MusicPlay : MonoBehaviour
     void Start()
     {
         musicPlayManager = this.GetComponent<MusicPlayManager>();
+        musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
         screenLeft = GameObject.Find("ScreenObjectLeft");
         screenRight = GameObject.Find("ScreenObjectRight");
 
@@ -74,12 +76,17 @@ public class MusicPlay : MonoBehaviour
         return isNull;
     }
 
-    //BPM変更の際は現在のBPMと変化後のBPMから割合を出して弾の速度を変更する
+    //BPM変更オブジェクトを投げる
     private void processBpmPart(int key_no, int frame_no) {
-        int changedBpm = Convert.ToInt32(list_music_data[key_no, frame_no], 16);
-        float rate = (float)changedBpm / (float)musicPlayManager.getBpm();
-        Debug.Log("BPMRate:" + rate);
-        musicPlayManager.setBpmChageRate(rate);
+        string bpmRate = list_music_data[key_no, frame_no];
+        GameObject bpmChangeObject = Instantiate(musicPlayManager.bpmChangeObj) as GameObject;
+        bpmChangeObject.transform.localScale = new Vector3(
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE
+        );
+        BpmChangeObject b = bpmChangeObject.GetComponent<BpmChangeObject>();
+        b.setBpmRate(bpmRate); 
     }
 
     private void processImagePart(int key_no, int frame_no) {
@@ -165,6 +172,7 @@ public class MusicPlay : MonoBehaviour
             musicPlayManager.MUSIC_OBJ_SIZE,
             musicPlayManager.MUSIC_OBJ_SIZE
         );
+        if(key_no != 1) musicPlayData.addTotalNotesNum();
         try {
             if (!dict_audio.ContainsKey(wav_name)) {
                 Debug.Log("#WAV" + wav_name + "に該当する音がありませんでした");

@@ -14,6 +14,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public GameObject musicObjRed;
     [SerializeField] public GameObject musicObjOrange;
     [SerializeField] public GameObject bgmObj;
+    [SerializeField] public GameObject bpmChangeObj;
     [SerializeField] public float MUSIC_WIDTH; //弾が飛んでくる範囲
     [SerializeField] public float GOOD_LINE; //GOOD判定の距離（絶対値）
     [SerializeField] public float GREAT_LINE; //GREAT判定の距離（絶対値）
@@ -26,7 +27,7 @@ public class MusicPlayManager : MonoBehaviour
     private float musicObjVec;
     private float movingDistance = 0;
     private float BPM;
-    private int KEY_NUM = 30;
+    private int KEY_NUM = 60;
     private int MAX_OBJ_NUM = 100000;
     private bool isUpdate = false;
     private Dictionary<string, string> dict_info;
@@ -34,8 +35,10 @@ public class MusicPlayManager : MonoBehaviour
     private int nullCount = 0;
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
+    private AnimationManager animationManager;
     private int playKeyNum; //BMSのKEY数（5key or 7key)
     private float bpmChangeRate = 1.0f; //BPM変更の際に使用
+    private bool isGaming = true;
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
 
@@ -92,6 +95,7 @@ public class MusicPlayManager : MonoBehaviour
         Application.targetFrameRate = FRAME_RATE;
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
+        animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
         MUSIC_FOLDER_PATH = getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
         frame_num = 0;
@@ -152,6 +156,7 @@ public class MusicPlayManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isGaming) return;
         if (isUpdate) {
             bool isNull = musicPlay.playMusic(frame_num);
             if (isNull) {
@@ -167,10 +172,9 @@ public class MusicPlayManager : MonoBehaviour
             }
             frame_num++;
         }
-        //Bボタンが押されたら曲選択に戻る
-        if (OVRInput.GetDown(OVRInput.Button.Two)) {
-            // シーン切り替え
-            SceneManager.LoadScene("MusicSelectScene");
+        //Bボタンが押されたら電気を消す
+        if ((OVRInput.GetDown(OVRInput.Button.Two)) || (Input.GetKeyUp(KeyCode.Escape))) {
+            returnMusicSelectScene();
         }
 
         
@@ -181,6 +185,20 @@ public class MusicPlayManager : MonoBehaviour
         AudioSource audioSource = this.GetComponent<AudioSource>();
         audioSource.clip = Resources.Load<AudioClip>("src/success");
         audioSource.PlayOneShot(audioSource.clip);
+        animationManager.startFinishAnimation();
+    }
+
+    //musicselectに戻る
+    public void returnMusicSelectScene() {
+        // シーン切り替え
+        //SceneManager.LoadScene("MusicSelectScene");
+        isGaming = false;
+        GameObject.Find("CenterEyeAnchor").GetComponent<OVRScreenFade>().FadeOut();
+        StartCoroutine(DelayMethod(2.0f));
+    }
+    private IEnumerator DelayMethod(float waitTime) {
+        yield return new WaitForSeconds(waitTime);
+        SceneManager.LoadScene("MusicSelectScene");
     }
 
 }

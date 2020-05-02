@@ -6,6 +6,7 @@ public class MusicObject : MonoBehaviour
 {
     public GameObject hitPrefab;
     private MusicPlayManager m;
+    private MusicPlayData musicPlayData;
     private float GOOD_LINE;
     private float GREAT_LINE;
     private bool isPoor = false;
@@ -19,6 +20,8 @@ public class MusicObject : MonoBehaviour
     void Start()
     {
         GameObject mainObject = GameObject.Find("MusicPlayManager");
+        musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
+
         m = mainObject.GetComponent<MusicPlayManager>();
         v = m.getMusicObjVec();
         isAutoPlay = m.isAutoPlay;
@@ -39,7 +42,8 @@ public class MusicObject : MonoBehaviour
         //音楽が再生されておらず後ろに行ってしまったら
         if(!isSound) {
             if ((this.transform.position.z < -GOOD_LINE) && (!isPoor)) {
-                ui.setCombo(0);
+                musicPlayData.setComboNum(0);
+                musicPlayData.addPoorNum();
                 ui.setStatus("poor");
                 isPoor = true;
             }
@@ -78,10 +82,20 @@ public class MusicObject : MonoBehaviour
 
     //結果の判定
     void judge() {
-        ui.addCombo();
+        musicPlayData.addComboNum();
         float z = Mathf.Abs(this.transform.position.z);
-        if (z < 1.0f) ui.setStatus("good");
-        if (z < 0.5f) ui.setStatus("great");
+        if (z <= GREAT_LINE) {
+            ui.setStatus("great");
+            musicPlayData.addGreatNum();
+        }
+        else if ((z > GREAT_LINE) && (z < GOOD_LINE)) {
+            ui.setStatus("good");
+            musicPlayData.addGoodNum();
+        }
+        else {
+            ui.setStatus("poor");
+            musicPlayData.addPoorNum();
+        }
     }
 
     //ヒットスパーク

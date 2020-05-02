@@ -120,7 +120,9 @@ public class MusicSelect : MonoBehaviour
                 if (listStars != null) destroyStars();
                 listStars = showStar(dificurity);
             }
-            Debug.Log("select : " + musicTitleText.text);
+        GameObject.Find("MusicCountArea").GetComponent<Text>().text = 
+            (musicSelectManager.folderCount + 1) + "/" + musicSelectManager.listMusicDict.Count;
+        Debug.Log("select : " + musicTitleText.text);
     }
 
     void showLevel(int dificurity) {

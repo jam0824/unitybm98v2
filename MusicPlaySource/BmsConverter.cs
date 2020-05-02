@@ -130,10 +130,20 @@ public class BmsConverter : MonoBehaviour
     
     //画像ファイルを外部から読み込む
     private Sprite getSprite(string filename) {
+        string tmpFileName = filename.ToLower();
         byte[] bytes = LoadBytes(filename);
-        BMPLoader loader = new BMPLoader();
-        var bmpImage = loader.LoadBMP(bytes);
-        Texture2D tex = bmpImage.ToTexture2D();
+
+        Texture2D tex = new Texture2D(0, 0); ;
+        if (tmpFileName.Contains(".bmp")) {
+            BMPLoader loader = new BMPLoader();
+            var bmpImage = loader.LoadBMP(bytes);
+            tex = bmpImage.ToTexture2D();
+        }
+        else {
+            tex.LoadImage(bytes);
+        }
+        
+
         Sprite s = Sprite.Create(
                         tex,
                         new Rect(0f, 0f, tex.width, tex.height),
@@ -179,6 +189,10 @@ public class BmsConverter : MonoBehaviour
                 if (key_no == 2) {
                     continue;
                 }
+                //ロングのヤツはBGMにしてしまう
+                if((key_no >= 50) && (key_no <= 60)) {
+                    key_no = 1;
+                }
 
                 //該当小節1つの所要フレーム数を求める
                 float how_long_syousetsu = (60.0f * 4.0f * frame / BPM) * this.listSyousetsuRate[syousetsu_no];
@@ -190,7 +204,6 @@ public class BmsConverter : MonoBehaviour
                 for (int i = 0; i < command[1].Length; i += 2) {
                     string wav = command[1].Substring(i, 2);
                     if (wav != "00") {
-
                         int key_frame = Mathf.RoundToInt(listSyousetsuFrameCount[syousetsu_no] + (how_long_onpu * (i / 2)));
                         if (list_music_data[key_no, key_frame] == null) {
                             list_music_data[key_no, key_frame] = wav;
