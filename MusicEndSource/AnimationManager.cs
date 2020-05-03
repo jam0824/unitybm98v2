@@ -33,6 +33,7 @@ public class AnimationManager : MonoBehaviour
             pos.y += 0.05f;
             completeObj.GetComponent<Transform>().transform.position = pos;
             if (!isMakeResultArea) {
+                playSe();
                 GetComponent<ResultAreaAnimation>().startResultAreaDraw();
                 isMakeResultArea = true;
             }
@@ -48,5 +49,12 @@ public class AnimationManager : MonoBehaviour
     private void makeCompleteObj() {
         completeObj = Instantiate(COMPLETE_OBJECT) as GameObject;
         completeFadeIn = completeObj.GetComponent<FadeIn>();
+    }
+
+    private void playSe() {
+        AudioSource audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(
+            musicPlayManager.randomSe(musicPlayManager.listSeClear)
+        );
     }
 }

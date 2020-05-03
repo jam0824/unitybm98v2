@@ -40,19 +40,20 @@ public class ResultAreaAnimation : MonoBehaviour
             animCount++;
             switch (animCount) {
                 case 1:
-                    drawMaxCombo(musicPlayData.getMaxComboNum());
+                    drawTotalNotes(musicPlayData.getTotalNotesNum());
+                    
                     break;
                 case 2:
-                    drawGreat(musicPlayData.getGreatNum());
+                    drawMaxCombo(musicPlayData.getMaxComboNum());
                     break;
                 case 3:
-                    drawGood(musicPlayData.getGoodNum());
+                    drawGreat(musicPlayData.getGreatNum());
                     break;
                 case 4:
-                    drawPoor(musicPlayData.getPoorNum());
+                    drawGood(musicPlayData.getGoodNum());
                     break;
                 case 5:
-                    drawTotalNotes(musicPlayData.getTotalNotesNum());
+                    drawPoor(musicPlayData.getPoorNum());
                     break;
                 case 6:
                     drawCalorie(musicPlayData.getCalorie());

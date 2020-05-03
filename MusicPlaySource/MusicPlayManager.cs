@@ -21,8 +21,10 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public int AUTO_KEY_NO; //このキー以降はオート
     [SerializeField] private string music_folder;
     [SerializeField] private string music_bms;
+    [SerializeField] public List<AudioClip> listSeClear;
+    [SerializeField] public List<AudioClip> listSeFailed;
 
-    private float MUSIC_OBJ_Y;
+    public float MUSIC_OBJ_Y;
     private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
     private float musicObjVec;
     private float movingDistance = 0;
@@ -119,7 +121,8 @@ public class MusicPlayManager : MonoBehaviour
     //ヘッドセットからの距離でMusicObjectの高さを決定する
     private float getMusicObjectY() {
         float y = GameObject.Find("CenterEyeAnchor").transform.position.y;
-        return y * MUSIC_OBJ_Y_RATE;
+        //return y * MUSIC_OBJ_Y_RATE;
+        return 0.1f;
     }
 
     void startGame(string musicFolder, string musicBms) {
@@ -156,7 +159,13 @@ public class MusicPlayManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isGaming) return;
+        //ゲームが終了していたらAでもトリガーでも曲セレクトに戻る
+        if (!isGaming) {
+            if ((OVRInput.GetDown(OVRInput.Button.One))||(OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))) {
+                returnMusicSelectScene();
+            }
+            return;
+        }
         if (isUpdate) {
             bool isNull = musicPlay.playMusic(frame_num);
             if (isNull) {
@@ -183,8 +192,10 @@ public class MusicPlayManager : MonoBehaviour
     //曲終了処理
     void finish() {
         AudioSource audioSource = this.GetComponent<AudioSource>();
+        //歓声
         audioSource.clip = Resources.Load<AudioClip>("src/success");
         audioSource.PlayOneShot(audioSource.clip);
+
         animationManager.startFinishAnimation();
     }
 
@@ -199,6 +210,12 @@ public class MusicPlayManager : MonoBehaviour
     private IEnumerator DelayMethod(float waitTime) {
         yield return new WaitForSeconds(waitTime);
         SceneManager.LoadScene("MusicSelectScene");
+    }
+
+    //ランダムでリストからSEを選択して返す
+    public AudioClip randomSe(List<AudioClip> listAudioClip) {
+        int num = Random.Range(0, listAudioClip.Count);
+        return listAudioClip[num];
     }
 
 }

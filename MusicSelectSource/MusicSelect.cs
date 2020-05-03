@@ -108,6 +108,7 @@ public class MusicSelect : MonoBehaviour
     }
 
     public void showInfomation(Dictionary<string, string> dictMusicData) {
+        
             if (dictMusicData.ContainsKey("#TITLE"))
                 GameObject.Find("MusicTitleArea").GetComponent<Text>().text = dictMusicData["#TITLE"];
             if (dictMusicData.ContainsKey("#GENRE"))
@@ -115,14 +116,16 @@ public class MusicSelect : MonoBehaviour
             if (dictMusicData.ContainsKey("#ARTIST"))
                 GameObject.Find("MusicArtistArea").GetComponent<Text>().text = dictMusicData["#ARTIST"];
             if (dictMusicData.ContainsKey("#PLAYLEVEL")) {
+            /*
                 int dificurity = int.Parse(dictMusicData["#PLAYLEVEL"]);
                 showLevel(dificurity);
                 if (listStars != null) destroyStars();
                 listStars = showStar(dificurity);
+               */ 
             }
         GameObject.Find("MusicCountArea").GetComponent<Text>().text = 
             (musicSelectManager.folderCount + 1) + "/" + musicSelectManager.listMusicDict.Count;
-        Debug.Log("select : " + musicTitleText.text);
+        //Bm98Debug.Instance.Log("select : " + musicTitleText.text);  
     }
 
     void showLevel(int dificurity) {
