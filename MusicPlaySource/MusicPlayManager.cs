@@ -40,6 +40,7 @@ public class MusicPlayManager : MonoBehaviour
     private AnimationManager animationManager;
     private int playKeyNum; //BMSのKEY数（5key or 7key)
     private float bpmChangeRate = 1.0f; //BPM変更の際に使用
+    private float totalCalorie = 0;
     private bool isGaming = true;
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
@@ -85,7 +86,11 @@ public class MusicPlayManager : MonoBehaviour
     public void addMovingDistance(float dist) {
         this.movingDistance += dist;
     }
-    
+    public float TotalCalorie {
+        get { return totalCalorie; }
+        set { this.totalCalorie = value; }
+    }
+
 
     void Start() {
         init();
@@ -161,7 +166,9 @@ public class MusicPlayManager : MonoBehaviour
     {
         //ゲームが終了していたらAでもトリガーでも曲セレクトに戻る
         if (!isGaming) {
-            if ((OVRInput.GetDown(OVRInput.Button.One))||(OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))) {
+            if ((OVRInput.GetDown(OVRInput.Button.One))||
+                (OVRInput.GetDown(OVRInput.Button.Two))||
+                (OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))) {
                 returnMusicSelectScene();
             }
             return;
@@ -181,8 +188,11 @@ public class MusicPlayManager : MonoBehaviour
             }
             frame_num++;
         }
-        //Bボタンが押されたら電気を消す
-        if ((OVRInput.GetDown(OVRInput.Button.Two)) || (Input.GetKeyUp(KeyCode.Escape))) {
+        //Bボタンが押されたら終了
+        if ((OVRInput.GetDown(OVRInput.Button.Two)) ||
+            (Input.GetKeyUp(KeyCode.Space))||
+            (Input.GetKeyUp(KeyCode.Escape))) {
+            isGaming = false;
             returnMusicSelectScene();
         }
 
@@ -191,6 +201,7 @@ public class MusicPlayManager : MonoBehaviour
 
     //曲終了処理
     void finish() {
+        isGaming = false;
         AudioSource audioSource = this.GetComponent<AudioSource>();
         //歓声
         audioSource.clip = Resources.Load<AudioClip>("src/success");
@@ -202,14 +213,20 @@ public class MusicPlayManager : MonoBehaviour
     //musicselectに戻る
     public void returnMusicSelectScene() {
         // シーン切り替え
-        //SceneManager.LoadScene("MusicSelectScene");
-        isGaming = false;
+        this.totalCalorie += GetComponent<MusicPlayData>().getCalorie();
         GameObject.Find("CenterEyeAnchor").GetComponent<OVRScreenFade>().FadeOut();
         StartCoroutine(DelayMethod(2.0f));
     }
     private IEnumerator DelayMethod(float waitTime) {
         yield return new WaitForSeconds(waitTime);
+        SceneManager.sceneLoaded += GameSceneLoaded;
         SceneManager.LoadScene("MusicSelectScene");
+    }
+    private void GameSceneLoaded(Scene next, LoadSceneMode mode) {
+        // シーン切り替え後のスクリプトを取得
+        MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
+        musicSelectManager.setTotalCalorie(totalCalorie);
+        SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
     //ランダムでリストからSEを選択して返す

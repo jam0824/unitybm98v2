@@ -26,7 +26,7 @@ public class MusicSelect : MonoBehaviour
         
         musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicTitleText = GameObject.Find("MusicTitleArea").GetComponent<Text>();
-        lightCanvas = GameObject.Find("LightCanvas");
+        lightCanvas = GameObject.Find("TvCanvas");
         recordSetTransform = GameObject.Find("RecordSet").GetComponent<RectTransform>();
         oldRecordPos = recordSetTransform.position;
         audioSource = this.GetComponent<AudioSource>();
@@ -116,13 +116,11 @@ public class MusicSelect : MonoBehaviour
             if (dictMusicData.ContainsKey("#ARTIST"))
                 GameObject.Find("MusicArtistArea").GetComponent<Text>().text = dictMusicData["#ARTIST"];
             if (dictMusicData.ContainsKey("#PLAYLEVEL")) {
-            /*
-                int dificurity = int.Parse(dictMusicData["#PLAYLEVEL"]);
-                showLevel(dificurity);
-                if (listStars != null) destroyStars();
-                listStars = showStar(dificurity);
-               */ 
-            }
+            int dificurity = int.Parse(dictMusicData["#PLAYLEVEL"]);
+            showLevel(dificurity);
+            if (listStars != null) destroyStars();
+            listStars = showStar(dificurity);
+        }
         GameObject.Find("MusicCountArea").GetComponent<Text>().text = 
             (musicSelectManager.folderCount + 1) + "/" + musicSelectManager.listMusicDict.Count;
         //Bm98Debug.Instance.Log("select : " + musicTitleText.text);  
@@ -145,7 +143,8 @@ public class MusicSelect : MonoBehaviour
     List<GameObject> showStar(int dificurity) {
         List<GameObject> listStars = new List<GameObject>();
         Vector3 pos = lightCanvas.GetComponent<RectTransform>().position;
-        pos.y -= 0.14f;
+        pos.y -= 0.25f;
+        //pos.x -= 0f;
         for (int i = 0; i < dificurity; i++) {
             listStars.Add(makeStar(pos, i));
         }
@@ -159,7 +158,7 @@ public class MusicSelect : MonoBehaviour
         Texture2D texture = Resources.Load("src/MusicSelect/star") as Texture2D;
         img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         star.GetComponent<RectTransform>().sizeDelta = new Vector2(texture.width, texture.height);
-        pos.x += 0.1f * count;
+        pos.x -= 0.15f * count;
         star.GetComponent<RectTransform>().position = pos;
         return star;
     }

@@ -10,7 +10,7 @@ public class MusicPlayData : MonoBehaviour
     private int goodNum = 0;
     private int poorNum = 0;
     private int totalNotesNum = 0;
-    private float calorie = 0f;
+    private float calorie = 0;
 
     public int getMaxComboNum() {
         return this.maxComboNum;
@@ -55,6 +55,7 @@ public class MusicPlayData : MonoBehaviour
     public void setCalorie(float calorie) {
         this.calorie = calorie;
     }
+    
 
 
 }

@@ -7,6 +7,7 @@ using System.IO;
 using UnityBm98Utilities;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UI;
 
 public class MusicSelectManager : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class MusicSelectManager : MonoBehaviour
     private BmsInformationLoader bmsInformationLoader;
     private MusicSelect musicSelect;
     private List<GameObject> listRecordObject;
+    private float totalCalorie = 0;
 
     private float recordY = 1.0f;
     private float recordZ = 1.0f;
@@ -32,12 +34,17 @@ public class MusicSelectManager : MonoBehaviour
         return listMusicDict[folderCount];
     }
 
+    public void setTotalCalorie(float calorie) {
+        this.totalCalorie = calorie;
+    }
+
     void Start()
     {
         MUSIC_FOLDER_PATH = config.getFolderPath();
         musicSelect = this.GetComponent<MusicSelect>();
         listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(MUSIC_FOLDER_PATH);
         listRecordObject = makeAllRecords(listMusicDict, new Vector3(0,recordY, recordZ));
+        showTotalCalorie(this.totalCalorie);
         isReady = true;
         StartCoroutine(startSeDelayMethod(2.0f, SE_START));
     }
@@ -124,20 +131,23 @@ public class MusicSelectManager : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         startChangeScene();
     }
+
+    //シーン切り替え
     private void startChangeScene() {
         // イベントに登録
         SceneManager.sceneLoaded += GameSceneLoaded;
         // シーン切り替え
         SceneManager.LoadScene("MusicPlayScene");
     }
-
     private void GameSceneLoaded(Scene next, LoadSceneMode mode) {
         // シーン切り替え後のスクリプトを取得
         MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayManager.setDictMusicData(listMusicDict[folderCount]);
+        musicPlayManager.TotalCalorie = this.totalCalorie;
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
+    //全てのレコードを描画
     private List<GameObject> makeAllRecords(List<Dictionary<string, string>> listMusicDict, Vector3 pos) {
         List<GameObject> listRecordObject = new List<GameObject>();
         Vector3 oldPos = pos;
@@ -163,15 +173,19 @@ public class MusicSelectManager : MonoBehaviour
         return obj;
     }
 
+    //SE再生
     private void playSe(AudioClip audioClip) {
         AudioSource audioSource = GetComponent<AudioSource>();
         audioSource.volume = 1.0f;
         audioSource.PlayOneShot(audioClip);
     }
-
     private IEnumerator startSeDelayMethod(float waitTime, AudioClip audioClip) {
         yield return new WaitForSeconds(waitTime);
         playSe(audioClip);
+    }
+
+    private void showTotalCalorie(float totalCalorie) {
+        GameObject.Find("TotalCalorieText").GetComponent<Text>().text = totalCalorie.ToString("f1") + " kcal";
     }
 
 }

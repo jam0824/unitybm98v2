@@ -7,6 +7,8 @@ public class ControllerManager : MonoBehaviour
     private Vector3 oldPosition;
     private MusicPlayManager musicPlayManager;
 
+    public bool isLeftHand = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,5 +26,27 @@ public class ControllerManager : MonoBehaviour
         float dist = (this.transform.position - oldPosition).magnitude;
         oldPosition = this.transform.position;
         return Mathf.Abs(dist);
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "MusicObject") {
+            StartCoroutine(Vivration(0.1f, 0.3f));
+        }
+    }
+
+    IEnumerator Vivration(float time, float strong) {
+        if (isLeftHand) {
+            OVRInput.SetControllerVibration(strong, strong, OVRInput.Controller.LTouch);
+        }
+        else {
+            OVRInput.SetControllerVibration(strong, strong, OVRInput.Controller.RTouch);
+        }
+        yield return new WaitForSeconds(time);
+        if (isLeftHand) {
+            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.LTouch);
+        }
+        else {
+            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+        }
     }
 }
