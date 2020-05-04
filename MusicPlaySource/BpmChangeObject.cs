@@ -28,10 +28,11 @@ public class BpmChangeObject : MonoBehaviour
         }
     }
 
+    //現在のBPMと変更後BPMから変化の割合を出す。速度には割合がかけられる
     private void changeBpmRate() {
         int changedBpm = Convert.ToInt32(bpmRate, 16);
         float rate = (float)changedBpm / (float)musicPlayManager.getBpm();
-        Debug.Log("changedBpm=" + changedBpm + " : BPM=" + musicPlayManager.getBpm()  + "BPMRate:" + rate);
+        Debug.Log("changedBpm=" + changedBpm + " : BPM=" + musicPlayManager.getBpm()  + " : BPMRate:" + rate);
         musicPlayManager.setBpmChageRate(rate);
     }
     

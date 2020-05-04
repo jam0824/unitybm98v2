@@ -50,7 +50,7 @@ public class MusicSelectManager : MonoBehaviour
     }
 
 
-    // Update is called once per frame
+    //各種入力チェック
     void Update()
     {
         if (isReady) {
@@ -104,7 +104,7 @@ public class MusicSelectManager : MonoBehaviour
         GameObject.Find("SelectCircle").GetComponent<Transform>().transform.position = pos;
         GameObject.Find("SelectCircle").GetComponent<Transform>().transform.localEulerAngles = ang;
     }
-
+    //選択時のAボタン押してのウィンドウの移動
     private void moveSelectMsg(Vector3 pos, Vector3 ang) {
         GameObject.Find("PressButton").GetComponent<Transform>().transform.position = pos;
         GameObject.Find("PressButton").GetComponent<Transform>().transform.localEulerAngles = ang;

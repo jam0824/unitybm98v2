@@ -18,6 +18,7 @@ public class ResultAreaAnimation : MonoBehaviour
     private int frameRate;
     private bool isAnimation = false;
 
+    //スコア表示のところの処理
     public void startResultAreaDraw() {
         resultArea = Instantiate(RESULT_AREA_OBJECT) as GameObject;
         isAnimation = true;

@@ -7,6 +7,7 @@ public class MusicObject : MonoBehaviour
     public GameObject hitPrefab;
     private MusicPlayManager m;
     private MusicPlayData musicPlayData;
+    private MusicPlayPower musicPlayPower;
     private float GOOD_LINE;
     private float GREAT_LINE;
     private bool isPoor = false;
@@ -20,9 +21,11 @@ public class MusicObject : MonoBehaviour
     void Start()
     {
         GameObject mainObject = GameObject.Find("MusicPlayManager");
-        musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
 
+        musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
+        musicPlayPower = mainObject.GetComponent<MusicPlayPower>();
         m = mainObject.GetComponent<MusicPlayManager>();
+
         v = m.getMusicObjVec();
         isAutoPlay = m.isAutoPlay;
         GOOD_LINE = m.GOOD_LINE;
@@ -44,6 +47,7 @@ public class MusicObject : MonoBehaviour
             if ((this.transform.position.z < -GOOD_LINE) && (!isPoor)) {
                 musicPlayData.setComboNum(0);
                 musicPlayData.addPoorNum();
+                musicPlayPower.calcPoor();
                 ui.setStatus("poor");
                 isPoor = true;
             }
@@ -87,14 +91,17 @@ public class MusicObject : MonoBehaviour
         if (z <= GREAT_LINE) {
             ui.setStatus("great");
             musicPlayData.addGreatNum();
+            musicPlayPower.calcGreat();
         }
         else if ((z > GREAT_LINE) && (z < GOOD_LINE)) {
             ui.setStatus("good");
             musicPlayData.addGoodNum();
+            musicPlayPower.calcGood();
         }
         else {
             ui.setStatus("poor");
             musicPlayData.addPoorNum();
+            musicPlayPower.calcGreat();
         }
     }
 

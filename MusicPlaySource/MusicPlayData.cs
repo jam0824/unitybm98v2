@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MusicPlayData : MonoBehaviour
 {
+    //プレイ中のデータをコイツで管理したい
     private int maxComboNum = 0;
     private int comboNum = 0;
     private int greatNum = 0;
@@ -11,6 +12,7 @@ public class MusicPlayData : MonoBehaviour
     private int poorNum = 0;
     private int totalNotesNum = 0;
     private float calorie = 0;
+    private float mets = 0;
 
     public int getMaxComboNum() {
         return this.maxComboNum;
@@ -54,6 +56,11 @@ public class MusicPlayData : MonoBehaviour
     }
     public void setCalorie(float calorie) {
         this.calorie = calorie;
+    }
+
+    public float METs {
+        set { this.mets = value; }
+        get { return this.mets; }
     }
     
 

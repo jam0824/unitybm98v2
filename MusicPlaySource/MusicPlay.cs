@@ -89,6 +89,7 @@ public class MusicPlay : MonoBehaviour
         b.setBpmRate(bpmRate); 
     }
 
+    //画像が来たときの処理
     private void processImagePart(int key_no, int frame_no) {
         string imageName = list_music_data[key_no, frame_no];
         //画像が同じフレームに複数設定される場合があるのでその際は最初の要素のみ取得
@@ -103,7 +104,6 @@ public class MusicPlay : MonoBehaviour
         changeScreen(screenLeft, imageName);
         changeScreen(screenRight, imageName);
     }
-
     private void changeScreen(GameObject obj, string imageName) {
         try {
             SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
@@ -190,8 +190,10 @@ public class MusicPlay : MonoBehaviour
 
     //MusicObjectの位置を設定
     private void setPosition(GameObject obj, int key_no) {
-        float w = musicPlayManager.MUSIC_WIDTH / (musicPlayManager.getPlayKeyNum());
-        float x = -(musicPlayManager.MUSIC_WIDTH / 2) + (w * (key_no - 10));
+        //7keyのときはちょっと広げる
+        float musicWidth = (musicPlayManager.PlayKeyNum == 5) ? musicPlayManager.MUSIC_WIDTH : musicPlayManager.MUSIC_WIDTH + 0.2f;
+        float w = musicWidth / musicPlayManager.PlayKeyNum;
+        float x = -(musicWidth / 2) + (w * (key_no - 10));
         x -= w;
         //Debug.Log("key=" + musicPlayManager.getPlayKeyNum() + " : w=" + w + " : x=" + x);
         obj.transform.position = new Vector3(

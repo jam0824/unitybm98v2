@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityBm98Utilities;
+using UnityBm98Config;
 
 public class MusicPlayManager : MonoBehaviour
 {
@@ -25,22 +27,26 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public List<AudioClip> listSeFailed;
 
     public float MUSIC_OBJ_Y;
-    private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
-    private float musicObjVec;
-    private float movingDistance = 0;
-    private float BPM;
-    private int KEY_NUM = 60;
-    private int MAX_OBJ_NUM = 100000;
-    private bool isUpdate = false;
-    private Dictionary<string, string> dict_info;
-    private int frame_num = 0;
-    private int nullCount = 0;
+
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
+    private MusicPlayPower musicPlayPower;
     private AnimationManager animationManager;
+
+    private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
+    private float musicObjVec; //オブジェクトの速度
+    private float movingDistance = 0; //今使ってない。手の移動距離
+    private float BPM;
+    private int KEY_NUM = 60; //BMSで宣言されているキーの数
+    private int MAX_OBJ_NUM = 100000; //配列の最大数
     private int playKeyNum; //BMSのKEY数（5key or 7key)
+
+    private Dictionary<string, string> dict_info; //BMSの上の情報部分が入る
+    private int frame_num = 0;
+    private int nullCount = 0; //nullCountが一定数を超えたら成功で終了させる
     private float bpmChangeRate = 1.0f; //BPM変更の際に使用
     private float totalCalorie = 0;
+    private bool isUpdate = false;
     private bool isGaming = true;
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
@@ -59,6 +65,7 @@ public class MusicPlayManager : MonoBehaviour
     public int getKeyNum() {
         return this.KEY_NUM;
     }
+    
     public int getMaxObjNum() {
         return this.MAX_OBJ_NUM;
     }
@@ -68,9 +75,7 @@ public class MusicPlayManager : MonoBehaviour
     public float getMovingDistance() {
         return this.movingDistance;
     }
-    public int getPlayKeyNum() {
-        return this.playKeyNum;
-    }
+    
     public void setMusicFolder(string music_folder) {
         this.music_folder = music_folder;
     }
@@ -85,6 +90,11 @@ public class MusicPlayManager : MonoBehaviour
     }
     public void addMovingDistance(float dist) {
         this.movingDistance += dist;
+    }
+
+    public int PlayKeyNum {
+        set { this.playKeyNum = value; }
+        get { return this.playKeyNum; }
     }
     public float TotalCalorie {
         get { return totalCalorie; }
@@ -102,24 +112,15 @@ public class MusicPlayManager : MonoBehaviour
         Application.targetFrameRate = FRAME_RATE;
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
+        musicPlayPower = this.GetComponent<MusicPlayPower>();
         animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
-        MUSIC_FOLDER_PATH = getFolderPath();
+        MUSIC_FOLDER_PATH = config.getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
         frame_num = 0;
         nullCount = 0;
         if (dictMusicData != null) {
             this.music_folder = dictMusicData["music_folder"];
             this.music_bms = dictMusicData["music_bms"];
-        }
-    }
-
-    //テスト時とoculus時でパスを自動で変更
-    private string getFolderPath() {
-        if (Application.platform == RuntimePlatform.WindowsEditor) {
-            return "D:/download/game/bm98/music/";
-        }
-        else {
-            return "/storage/emulated/0/unitybm98/";
         }
     }
 
@@ -157,7 +158,7 @@ public class MusicPlayManager : MonoBehaviour
         //弾の速さ計算
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
         //5 or 7 keyかを取得
-        playKeyNum = bmsConverter.playKeyNum;
+        this.playKeyNum = bmsConverter.PlayKeyNum;
         isUpdate = true;
     }
 
@@ -181,9 +182,13 @@ public class MusicPlayManager : MonoBehaviour
             else {
                 nullCount = 0;
             }
+            //失敗時の終了判定
+            if (musicPlayPower.isFailed) {
+                failed();
+            }
             
+            //成功時の終了判定
             if (nullCount == FRAME_RATE * 5) {
-                isUpdate = false;
                 finish();
             }
             frame_num++;
@@ -198,16 +203,28 @@ public class MusicPlayManager : MonoBehaviour
 
         
     }
-
-    //曲終了処理
+    //成功時の曲終了処理
     void finish() {
+        isUpdate = false;
         isGaming = false;
         AudioSource audioSource = this.GetComponent<AudioSource>();
         //歓声
         audioSource.clip = Resources.Load<AudioClip>("src/success");
         audioSource.PlayOneShot(audioSource.clip);
-
+        //成功アニメーションスタート
         animationManager.startFinishAnimation();
+    }
+
+    //失敗時の曲終了処理
+    private void failed() {
+        isUpdate = false;
+        isGaming = false;
+        AudioSource audioSource = this.GetComponent<AudioSource>();
+        //失敗ボイス
+        audioSource.PlayOneShot(randomSe(listSeFailed));
+        //失敗アニメーションスタート
+        animationManager.startFailedAnimation();
+        returnMusicSelectScene();
     }
 
     //musicselectに戻る

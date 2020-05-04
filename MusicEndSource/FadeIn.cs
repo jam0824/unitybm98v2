@@ -7,9 +7,9 @@ public class FadeIn : MonoBehaviour
     public float ALPHA_FADE_SPEED;
     public float SCALE_FADE_SPEED;
     public float MAX_SCALE;
-    public bool isAlphaFadeIn;
-    public bool isScaleFadeIn;
-    public bool isAlphaFinish = false;
+    public bool isAlphaFadeIn; //これがtrueならalphaの変更
+    public bool isScaleFadeIn; //これがtrueならサイズの変更
+    public bool isAlphaFinish = false; //これはアニメが終わってるかの判定用
     public bool isScaleFinish = false;
     public int liveCount = 0;
 

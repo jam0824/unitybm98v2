@@ -5,7 +5,9 @@ using UnityEngine;
 public class AnimationManager : MonoBehaviour
 {
     public GameObject COMPLETE_OBJECT;
+    public GameObject FAILED_OBJECT;
     public bool isAnimation = false;
+    public bool isSuccess = false;
 
     private MusicPlayManager musicPlayManager;
     private GameObject completeObj;
@@ -27,7 +29,9 @@ public class AnimationManager : MonoBehaviour
     {
         if (!isAnimation) return;
 
-        if((completeObj.GetComponent<Transform>().transform.position.y < 4.0f) && 
+        //成功時のコンプリートが上に上がってスコア表示が出るところ
+        if((isSuccess) &&
+            (completeObj.GetComponent<Transform>().transform.position.y < 4.0f) && 
             (completeFadeIn.liveCount > musicPlayManager.FRAME_RATE * 4)) {
             Vector3 pos = completeObj.GetComponent<Transform>().transform.position;
             pos.y += 0.05f;
@@ -41,8 +45,10 @@ public class AnimationManager : MonoBehaviour
         
     }
 
+    //成功時のアニメーション開始
     public void startFinishAnimation() {
         isAnimation = true;
+        isSuccess = true;
         makeCompleteObj();
     }
 
@@ -56,5 +62,15 @@ public class AnimationManager : MonoBehaviour
         audioSource.PlayOneShot(
             musicPlayManager.randomSe(musicPlayManager.listSeClear)
         );
+    }
+
+    //失敗時のアニメーション開始
+    public void startFailedAnimation() {
+        isAnimation = true;
+        isSuccess = false;
+        makeFailedObj();
+    }
+    private void makeFailedObj() {
+        GameObject obj = Instantiate(FAILED_OBJECT) as GameObject;
     }
 }

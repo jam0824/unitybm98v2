@@ -10,7 +10,7 @@ using FileController;
 public class BmsConverter : MonoBehaviour
 {
     private MusicPlayManager musicPlayManager;
-    public int playKeyNum = 5;
+    private int playKeyNum = 5;
     Dictionary<string, string> dicChangeChars;
 
     private string beforeChar = "#";
@@ -18,6 +18,10 @@ public class BmsConverter : MonoBehaviour
     //小節の長さのレート保管用
     private float[] listSyousetsuRate;
 
+    public int PlayKeyNum {
+        set { this.playKeyNum = value; }
+        get { return this.playKeyNum; }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +44,7 @@ public class BmsConverter : MonoBehaviour
         return fileController.fileConvertUTF8(filePath);
     }
 
-    //インフォメーション部分読み込み
+    //インフォメーション部分読み込み。現状はwav宣言より上にないと読み込まない
     public Dictionary<string, string> getInfomation(string[] list_string) {
         Dictionary<string, string> dict_info = new Dictionary<string, string>();
         foreach (string line in list_string) {
@@ -86,6 +90,7 @@ public class BmsConverter : MonoBehaviour
         return dic_audio;
     }
 
+    //www読み込みでうまくいかない文字列の変換処理
     private string changeNotUsingChar(string value) {
 
         foreach (string key in this.dicChangeChars.Keys) {
@@ -200,7 +205,7 @@ public class BmsConverter : MonoBehaviour
                 //音符間の所要フレーム数を求める
                 float how_long_onpu = how_long_syousetsu / (command[1].Length / 2);
       
-
+                //データ部分を2バイトずつ読み込む
                 for (int i = 0; i < command[1].Length; i += 2) {
                     string wav = command[1].Substring(i, 2);
                     if (wav != "00") {
@@ -223,7 +228,7 @@ public class BmsConverter : MonoBehaviour
 
     //プレイキー数取得
     private void judgeKeyNum(int key_no) {
-        if((this.playKeyNum == 6)&&(key_no >= 17)&& (key_no <= 19)) {
+        if((key_no >= 17) && (key_no <= 19)) {
             this.playKeyNum = 7;
         }
     }

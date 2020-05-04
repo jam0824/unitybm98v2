@@ -8,7 +8,8 @@ public class BgmObject : MonoBehaviour
     private AudioSource audio;
     private float v;
     private bool isSound = false;
-    // Start is called before the first frame update
+
+ 
     void Start() {
         GameObject mainObject = GameObject.Find("MusicPlayManager");
         m = mainObject.GetComponent<MusicPlayManager>();

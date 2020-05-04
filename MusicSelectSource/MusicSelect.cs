@@ -20,7 +20,7 @@ public class MusicSelect : MonoBehaviour
     public bool isRightAnim = true;
 
 
-    // Start is called before the first frame update
+    // 後方にあるBM98用
     void Start()
     {
         

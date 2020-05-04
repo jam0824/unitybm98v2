@@ -50,6 +50,7 @@ public class UiController : MonoBehaviour
         calorieText.text = redrawCalorieText();
     }
 
+    //ファイル読み込み。たぶんどこでも使ってない
     string[] read(string filePath) {
         TextAsset text = Resources.Load<TextAsset>(filePath);
         string allText = text.text;
@@ -57,6 +58,7 @@ public class UiController : MonoBehaviour
         return allText.Split('\n');
     }
 
+    //イメージファイルを読み込む。たぶんどこでも使ってない
     private Dictionary<string, Sprite> readImageFiles(string[] list_string) {
         Dictionary<string, Sprite> dict_image = new Dictionary<string, Sprite>();
         foreach (string line in list_string) {
@@ -66,6 +68,7 @@ public class UiController : MonoBehaviour
         return dict_image;
     }
 
+    //コンボ数のところのアップデート
     private void updateSpriteArea() {
         if (musicPlayData.getComboNum() == 0) {
             changeState();
@@ -78,7 +81,7 @@ public class UiController : MonoBehaviour
         if (isRedraw) resetAlpha();
     }
 
-   
+    //現在のコンボステータスを変更
     private void changeState() {
         if (oldStatus != status) {
             SpriteRenderer s = dict_object["state"].GetComponent<SpriteRenderer>();
@@ -91,6 +94,7 @@ public class UiController : MonoBehaviour
         }
         
     }
+    //現在のコンボ数を変更
     private void changeNum() {
         int comboNum = musicPlayData.getComboNum();
         string str_combo_num = fill(comboNum.ToString(), "x", 4);
@@ -127,7 +131,7 @@ public class UiController : MonoBehaviour
         target += tmp;
         return target;
     }
-
+    //コンボ数のところを削除。コンボキレたとき
     private void deleteSpriteArea() {
         
         for (int i = 0; i < 4; i++) {
@@ -137,7 +141,7 @@ public class UiController : MonoBehaviour
         }
 
     }
-
+    //コンボは放っておくと薄くなっていくので、コンボに変更があったらalpha値を直す
     private void resetAlpha() {
         SpriteRenderer s = dict_object["state"].GetComponent<SpriteRenderer>();
         resetAlphaExec(s);
@@ -147,18 +151,17 @@ public class UiController : MonoBehaviour
             resetAlphaExec(numberSprite);
         }
     }
-
     private void resetAlphaExec(SpriteRenderer s) {
         var color = s.color;
         color.a = 1.0f;
         s.color = color;
     }
 
+    //消費カロリーの表示
     string redrawCalorieText() {
-        float dist = musicPlayManager.getMovingDistance();
-        float calorie = dist / musicPlayManager.DEC_M_PAR_CALORIE;
-        musicPlayData.setCalorie(calorie);
+        float mets = musicPlayData.METs;
+        float calorie = musicPlayData.getCalorie();
 
-        return "消費カロリー\n" + calorie.ToString("f1") + "kcal\n\n拳の総移動距離\n" + dist.ToString("f1") + "m";
+        return "消費カロリー\n" + calorie.ToString("f1") + "kcal\n\n運動強度\n" + mets.ToString("f1") + " METs";
     }
 }

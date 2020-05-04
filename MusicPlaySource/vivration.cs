@@ -4,19 +4,31 @@ using UnityEngine;
 
 public class vivration : MonoBehaviour
 {
-    public float VIVERATION_TIME = 0.1f;
+    public float VIVERATION_TIME;
+    public float VIVERATION_POWER;
+    public string TRIGGER_TAG;
+    public bool isLeftHand = false; //左手右手判別用
 
-
+    //Triggerのエンター時に起動させる
     void OnTriggerEnter(Collider other) {
-        if (other.gameObject.tag == "MusicObject") {
-            StartCoroutine(Vivration(VIVERATION_TIME));
+        if (other.gameObject.tag == TRIGGER_TAG) {
+            StartCoroutine(Vivration(VIVERATION_TIME, VIVERATION_POWER));
         }
     }
 
-    IEnumerator Vivration(float time) {
-        var activeController = OVRInput.GetActiveController();
-        OVRInput.SetControllerVibration(1, 1, activeController);
+    IEnumerator Vivration(float time, float strong) {
+        if (isLeftHand) {
+            OVRInput.SetControllerVibration(strong, strong, OVRInput.Controller.LTouch);
+        }
+        else {
+            OVRInput.SetControllerVibration(strong, strong, OVRInput.Controller.RTouch);
+        }
         yield return new WaitForSeconds(time);
-        OVRInput.SetControllerVibration(0, 0, activeController);
+        if (isLeftHand) {
+            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.LTouch);
+        }
+        else {
+            OVRInput.SetControllerVibration(0, 0, OVRInput.Controller.RTouch);
+        }
     }
 }
