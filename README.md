@@ -2,7 +2,7 @@
 You can download latest apk below link.  
 <https://drive.google.com/drive/folders/1Al4NRgsqriaBL-8kN-QFQo6oYDXCFwPT>  
   
-# What is BMSFitness
+# What is BMSFitness?
 It's a fitness game like BOXVR.  
 Balls will fly along with the song, so hit it at the right time.  
 Also, you can see how many calories you've used.
