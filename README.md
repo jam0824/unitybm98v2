@@ -26,7 +26,7 @@ You can check this game at youtube.
 
 
 # Installation  
-1. **Please create "bmsfitness" folder under the internal storate of Oculus Quest.**  
+1. **Please create "bmsfitness" folder under the internal storage of Oculus Quest.**  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211600.png)  
   
   
