@@ -67,6 +67,7 @@ public class MusicPlay : MonoBehaviour
 
                 //BPM変更の際
                 if (i == 3) {
+                    //不要。デバッグ用
                     processBpmPart(i, frame_no);
                 }
                 isNull = false;
@@ -191,7 +192,8 @@ public class MusicPlay : MonoBehaviour
     //MusicObjectの位置を設定
     private void setPosition(GameObject obj, int key_no) {
         //7keyのときはちょっと広げる
-        float musicWidth = (musicPlayManager.PlayKeyNum == 5) ? musicPlayManager.MUSIC_WIDTH : musicPlayManager.MUSIC_WIDTH + 0.2f;
+        //float musicWidth = (musicPlayManager.PlayKeyNum == 5) ? musicPlayManager.MUSIC_WIDTH : musicPlayManager.MUSIC_WIDTH + 0.2f;
+        float musicWidth = musicPlayManager.MUSIC_WIDTH;
         float w = musicWidth / musicPlayManager.PlayKeyNum;
         float x = -(musicWidth / 2) + (w * (key_no - 10));
         x -= w;

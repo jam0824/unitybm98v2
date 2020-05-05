@@ -97,7 +97,7 @@ public class MusicPlayManager : MonoBehaviour
         get { return this.playKeyNum; }
     }
     public float TotalCalorie {
-        get { return totalCalorie; }
+        get { return this.totalCalorie; }
         set { this.totalCalorie = value; }
     }
 
@@ -159,6 +159,8 @@ public class MusicPlayManager : MonoBehaviour
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
         //5 or 7 keyかを取得
         this.playKeyNum = bmsConverter.PlayKeyNum;
+
+        Debug.Log("最終フレーム : " + bmsConverter.LastFrameNo);
         isUpdate = true;
     }
 

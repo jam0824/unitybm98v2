@@ -33,7 +33,7 @@ public class BpmChangeObject : MonoBehaviour
         int changedBpm = Convert.ToInt32(bpmRate, 16);
         float rate = (float)changedBpm / (float)musicPlayManager.getBpm();
         Debug.Log("changedBpm=" + changedBpm + " : BPM=" + musicPlayManager.getBpm()  + " : BPMRate:" + rate);
-        musicPlayManager.setBpmChageRate(rate);
+        //musicPlayManager.setBpmChageRate(rate);
     }
     
 }

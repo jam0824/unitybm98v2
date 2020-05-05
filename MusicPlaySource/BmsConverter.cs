@@ -17,11 +17,18 @@ public class BmsConverter : MonoBehaviour
     private string afterChar = "xxx";
     //小節の長さのレート保管用
     private float[] listSyousetsuRate;
+    private int lastFrameNo;
 
     public int PlayKeyNum {
         set { this.playKeyNum = value; }
         get { return this.playKeyNum; }
     }
+
+    public int LastFrameNo {
+        set { this.lastFrameNo = value; }
+        get { return this.lastFrameNo; }
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -221,8 +228,12 @@ public class BmsConverter : MonoBehaviour
                 }
 
             }
-
         }
+
+        //続けてBPM変更対応実行
+        list_music_data = changeBpm(list_music_data, BPM);
+        //最終フレーム取得
+        this.LastFrameNo = getLastFrame(list_music_data);
         return list_music_data;
     }
 
@@ -271,6 +282,66 @@ public class BmsConverter : MonoBehaviour
             }
         }
         return listSyousetsuRate;
+    }
+
+    //楽譜を作り終わった後に、次はBPM制御を入れて全体を書き換える
+    private string[,] changeBpm(string[,] list_music_data, float BPM) {
+        for (int frame_no = 0; frame_no < musicPlayManager.getMaxObjNum(); frame_no++) {
+            for (int key_no = 0; key_no < musicPlayManager.getKeyNum(); key_no++) {
+                if(list_music_data[key_no, frame_no] != null) {
+                    //BPM変更だったら
+                    if (key_no == 3) {
+                        int changedBpm = Convert.ToInt32(list_music_data[key_no, frame_no], 16);
+                        float bpmRate = (float)changedBpm / (float)BPM;
+                        Debug.Log("Frame:" + frame_no + " BPM:" + BPM + " chandedBpm:" + changedBpm + " rate:" + bpmRate);
+                        list_music_data = changeBpmMain(list_music_data, bpmRate, frame_no);
+                        BPM = (float)changedBpm;
+                    }
+                }
+            }
+
+        }
+        return list_music_data;
+    }
+    //そのフレーム以降の曲データの格納場所をBpmRate分だけずらす
+    private string[,] changeBpmMain(
+        string[,] list_music_data, 
+        float BpmRate,
+        int key_frame) 
+    {
+        //変更後データを格納する配列
+        string[,] list_changed = new string[musicPlayManager.getKeyNum(), musicPlayManager.getMaxObjNum()];
+        for (int frame_no = 0; frame_no < musicPlayManager.getMaxObjNum(); frame_no++) {
+            for (int key_no = 0; key_no < musicPlayManager.getKeyNum(); key_no++) {
+                if (list_music_data[key_no, frame_no] != null) {
+                    //キーフレーム以前だったらそのまま代入
+                    if (frame_no <= key_frame) {
+                        list_changed[key_no, frame_no] = list_music_data[key_no, frame_no];
+                    }
+                    else {
+                        int changedFrame = Mathf.RoundToInt((frame_no - key_frame) / BpmRate) + key_frame;
+                        list_changed[key_no, changedFrame] = list_music_data[key_no, frame_no];
+                    }
+                }
+            }
+
+        }
+        return list_changed;
+    }
+
+    //最終フレームを検索する
+    public int getLastFrame(string[,] list_music_data) {
+        int lastFrameNo = 0;
+        for (int frame_no = 0; frame_no < musicPlayManager.getMaxObjNum(); frame_no++) {
+            for (int key_no = 0; key_no < musicPlayManager.getKeyNum(); key_no++) {
+                if (list_music_data[key_no, frame_no] != null) {
+                    lastFrameNo = frame_no;
+                    break;
+                }
+            }
+
+        }
+        return lastFrameNo;
     }
 
 
