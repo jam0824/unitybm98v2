@@ -31,7 +31,7 @@ You can check this game at youtube.
   
   
 
-2. **Put folders of songs in "bmsfitness" folder.**
+2. **Put folders of BMS in "bmsfitness" folder.**
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211651.png)  
 
 Songs can be found by googling "bms TITLE" and so on.  
