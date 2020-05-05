@@ -20,7 +20,7 @@ You can check this game at youtube.
 [![](https://img.youtube.com/vi/q6tGXoZBBC8/0.jpg)](https://www.youtube.com/watch?v=q6tGXoZBBC8)
 
 
-# Installtion  
+# Installation  
 1. **Please create "bmsfitness" folder under the internal storate of Oculus Quest.**  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211600.png)  
   
