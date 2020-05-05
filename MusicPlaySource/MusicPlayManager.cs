@@ -38,7 +38,7 @@ public class MusicPlayManager : MonoBehaviour
     private float movingDistance = 0; //今使ってない。手の移動距離
     private float BPM;
     private int KEY_NUM = 60; //BMSで宣言されているキーの数
-    private int MAX_OBJ_NUM = 100000; //配列の最大数
+    private int MAX_OBJ_NUM = 42000; //配列の最大数(7分)
     private int playKeyNum; //BMSのKEY数（5key or 7key)
 
     private Dictionary<string, string> dict_info; //BMSの上の情報部分が入る

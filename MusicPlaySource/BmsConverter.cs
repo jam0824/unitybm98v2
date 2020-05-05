@@ -201,8 +201,8 @@ public class BmsConverter : MonoBehaviour
                 if (key_no == 2) {
                     continue;
                 }
-                //ロングのヤツはBGMにしてしまう
-                if((key_no >= 50) && (key_no <= 60)) {
+                //20から後ろは全部BGMにしてしまう
+                if((key_no >= 20) && (key_no <= 69)) {
                     key_no = 1;
                 }
 
@@ -217,6 +217,7 @@ public class BmsConverter : MonoBehaviour
                     string wav = command[1].Substring(i, 2);
                     if (wav != "00") {
                         int key_frame = Mathf.RoundToInt(listSyousetsuFrameCount[syousetsu_no] + (how_long_onpu * (i / 2)));
+                        //Debug.Log("key_no:" + key_no + " key_frame:" + key_frame);
                         if (list_music_data[key_no, key_frame] == null) {
                             list_music_data[key_no, key_frame] = wav;
                         }
