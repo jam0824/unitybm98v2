@@ -8,6 +8,7 @@ public class UiController : MonoBehaviour
     private MusicPlayManager musicPlayManager;
     private MusicPlayData musicPlayData;
     private Text calorieText;
+    private Text metsText;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
@@ -24,6 +25,7 @@ public class UiController : MonoBehaviour
         musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
         calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
+        metsText = GameObject.Find("METsArea").GetComponent<Text>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
         dict_object.Add("state", state);
@@ -48,6 +50,7 @@ public class UiController : MonoBehaviour
     {
         updateSpriteArea();
         calorieText.text = redrawCalorieText();
+        metsText.text = redrawMetsText();
     }
 
     //ファイル読み込み。たぶんどこでも使ってない
@@ -159,9 +162,14 @@ public class UiController : MonoBehaviour
 
     //消費カロリーの表示
     string redrawCalorieText() {
-        float mets = musicPlayData.METs;
         float calorie = musicPlayData.getCalorie();
 
-        return "消費カロリー\n" + calorie.ToString("f1") + "kcal\n\n運動強度\n" + mets.ToString("f1") + " METs";
+        return calorie.ToString("f1") + " kcal";
+    }
+    //METsの表示
+    string redrawMetsText() {
+        float mets = musicPlayData.METs;
+
+        return mets.ToString("f1") + " METs";
     }
 }

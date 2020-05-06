@@ -180,11 +180,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.3
       objectReference: {fileID: 0}
-    - target: {fileID: 114121527286138176, guid: f7133224dcb423e4ba67f8d9693c01c5,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 65987945002627608, guid: f7133224dcb423e4ba67f8d9693c01c5,
         type: 3}
       propertyPath: m_IsTrigger
@@ -204,6 +199,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114121527286138176, guid: f7133224dcb423e4ba67f8d9693c01c5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 198352606232915426, guid: f7133224dcb423e4ba67f8d9693c01c5,
         type: 3}

@@ -124,6 +124,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: MusicObject
       objectReference: {fileID: 0}
+    - target: {fileID: 114315182399230558, guid: 3fda2b3c82a8c8149a167a69819276c0,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4650220963280550, guid: 3fda2b3c82a8c8149a167a69819276c0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.168898
@@ -179,11 +184,6 @@ PrefabInstance:
     - target: {fileID: 4650220963280550, guid: 3fda2b3c82a8c8149a167a69819276c0, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114315182399230558, guid: 3fda2b3c82a8c8149a167a69819276c0,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 65301198403381718, guid: 3fda2b3c82a8c8149a167a69819276c0,
         type: 3}
