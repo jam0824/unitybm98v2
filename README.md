@@ -60,3 +60,10 @@ Push A button to start the music.
 
 
 3. If you want to return to the music selection screen during the game, you can do so by pressing B button.
+
+
+# History
+- 20200507 : Corresponded ".bml", Fixed reading music bug at music select scene.
+- 20200506 : Changed the calorie UI.
+- 20200505 : Fixed Changing BPM channel(03) bug. 
+- 20200504 : First release.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FileController;
+using System;
 
 public class BmsInformationLoader : MonoBehaviour
 {
@@ -16,11 +17,20 @@ public class BmsInformationLoader : MonoBehaviour
         foreach (string folderName in listFolder) {
             List<string> listFile = fileController.getFileList(MUSIC_FOLDER_PATH + "/" + folderName);
             foreach (string fileName in listFile) {
-                if ((fileName.Contains(".bms")) || (fileName.Contains(".bme"))) {
-                    listMusicDict.Add(
-                        getBmsInfo(MUSIC_FOLDER_PATH, folderName, fileName, musicCount)
-                    );
-                    musicCount++;
+                if ((fileName.Contains(".bms")) || 
+                    (fileName.Contains(".bme")) ||
+                    (fileName.Contains(".bml"))) 
+                {
+                    try {
+                        listMusicDict.Add(
+                            getBmsInfo(MUSIC_FOLDER_PATH, folderName, fileName, musicCount)
+                        );
+                        musicCount++;
+                    }
+                    catch (Exception e) {
+                        Debug.Log("Can't open " + fileName);
+                    }
+                    
                 }
 
             }

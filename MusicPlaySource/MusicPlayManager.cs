@@ -42,8 +42,7 @@ public class MusicPlayManager : MonoBehaviour
     private int playKeyNum; //BMSのKEY数（5key or 7key)
 
     private Dictionary<string, string> dict_info; //BMSの上の情報部分が入る
-    private int frame_num = 0;
-    private int nullCount = 0; //nullCountが一定数を超えたら成功で終了させる
+    private int frameCount = 0; //frame数計算
     private float bpmChangeRate = 1.0f; //BPM変更の際に使用
     private float totalCalorie = 0;
     private bool isUpdate = false;
@@ -116,8 +115,7 @@ public class MusicPlayManager : MonoBehaviour
         animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
         MUSIC_FOLDER_PATH = config.getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
-        frame_num = 0;
-        nullCount = 0;
+        frameCount = 0;
         if (dictMusicData != null) {
             this.music_folder = dictMusicData["music_folder"];
             this.music_bms = dictMusicData["music_bms"];
@@ -177,23 +175,19 @@ public class MusicPlayManager : MonoBehaviour
             return;
         }
         if (isUpdate) {
-            bool isNull = musicPlay.playMusic(frame_num);
-            if (isNull) {
-                nullCount++;
-            }
-            else {
-                nullCount = 0;
-            }
+            bool isNull = musicPlay.playMusic(frameCount);
+
+            
             //失敗時の終了判定
             if (musicPlayPower.isFailed) {
                 failed();
             }
             
-            //成功時の終了判定
-            if (nullCount == FRAME_RATE * 5) {
+            //成功時の終了判定(曲終了5秒後)
+            if (frameCount == bmsConverter.LastFrameNo + (FRAME_RATE * 5)) {
                 finish();
             }
-            frame_num++;
+            frameCount++;
         }
         //Bボタンが押されたら終了
         if ((OVRInput.GetDown(OVRInput.Button.Two)) ||
