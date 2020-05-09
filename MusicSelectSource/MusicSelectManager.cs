@@ -12,7 +12,9 @@ using UnityEngine.UI;
 public class MusicSelectManager : MonoBehaviour
 {
     public GameObject RECORD_OBJECT;
+    public GameObject ZERO_OBJECT;
     public int folderCount = 0;
+    public int localRecordCount = -1; //現在表示されているレコードオブジェクトの番号。サークルを出すときに使う。
     public List<Dictionary<string, string>> listMusicDict;
     public bool isReady = false;
 
@@ -20,15 +22,27 @@ public class MusicSelectManager : MonoBehaviour
     public AudioClip SE_DECIDE;
     public AudioClip SE_MOVE;
 
-    private string MUSIC_FOLDER_PATH;
     private BmsInformationLoader bmsInformationLoader;
     private MusicSelect musicSelect;
+    private MusicSelectSaveFileLoader musicSelectSaveFileLoader;
+
+    private List<Dictionary<string, string>> listSaveData;
     private List<GameObject> listRecordObject;
-    private float totalCalorie = 0;
+    private string MUSIC_FOLDER_PATH;
+
+    private int SHOW_RECOED_NUM = 30;
+    private int[] listShowRecordFolderCount;
+    private int showRecordMidNum = 0;  //レコード表示の際に中央となる曲番号(folderCount)
+    private float recordDist = 0.5f;
+    private float MAX_SHOE_RECORD_X;
+    private float MIN_SHOE_RECORD_X;
 
     private float recordY = 1.0f;
     private float recordZ = 1.0f;
     private float selectCircleAng = 0;
+
+    private float totalCalorie = 0;
+    private int oldFolderCount = -1;
 
     public Dictionary<string, string> getDictMusicData() {
         return listMusicDict[folderCount];
@@ -38,15 +52,68 @@ public class MusicSelectManager : MonoBehaviour
         this.totalCalorie = calorie;
     }
 
+    public void setFolderCount(int folderCount) {
+        this.folderCount = folderCount;
+        this.showRecordMidNum = folderCount;
+    }
+
     void Start()
     {
+        bool isOk = false;
         MUSIC_FOLDER_PATH = config.getFolderPath();
         musicSelect = this.GetComponent<MusicSelect>();
-        listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(MUSIC_FOLDER_PATH);
-        listRecordObject = makeAllRecords(listMusicDict, new Vector3(0,recordY, recordZ));
+        musicSelectSaveFileLoader = this.GetComponent<MusicSelectSaveFileLoader>();
+        listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
+
+        //フォルダがなかったら処理終わり
+        if (!fileController.isFolderExist(MUSIC_FOLDER_PATH)) {
+            makeZeroObject();
+            return;
+        }
+        //レコード作成。レコードがあればtrue
+        isOk = recordInit();
+        if (!isOk) makeZeroObject();
+
+        //トータルカロリー表示
         showTotalCalorie(this.totalCalorie);
-        isReady = true;
+
+        //スタートフラグtrue
+        isReady = isOk;
+
+        //画面表示前にSEが表示されてしまうので、コールチンで遅らせて再生
         StartCoroutine(startSeDelayMethod(2.0f, SE_START));
+    }
+
+    private void makeZeroObject() {
+        GameObject obj = Instantiate(ZERO_OBJECT) as GameObject;
+    }
+
+    //セーブデータ、bmsデータを読み込んでレコードオブジェクト作成まで
+    bool recordInit() {
+        //セーブファイルをロード
+        listSaveData = musicSelectSaveFileLoader.loadSaveData();
+        //BMSのリストを作る
+        listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(MUSIC_FOLDER_PATH);
+
+        if(listMusicDict.Count == 0) {
+            return false;
+        }
+        if (SHOW_RECOED_NUM > listMusicDict.Count) SHOW_RECOED_NUM = listMusicDict.Count;
+
+        //BMSのリストにセーブデータを載せる
+        listMusicDict = musicSelectSaveFileLoader.appendDataToRecords(listMusicDict, listSaveData);
+        //リスト作成
+        listShowRecordFolderCount = makeListShowRecord(
+            showRecordMidNum,
+            listMusicDict.Count
+        );
+        //レコードオブジェクトを作成
+        listRecordObject = makeAllRecords(
+            listMusicDict,
+            listShowRecordFolderCount,
+            new Vector3(0, recordY, recordZ)
+        );
+        return true;
     }
 
 
@@ -56,6 +123,12 @@ public class MusicSelectManager : MonoBehaviour
         if (isReady) {
             Vector2 stickL = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
             Vector2 stickR = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
+
+            //選曲が変わった際の処理
+            if(oldFolderCount != folderCount) {
+                showScore();
+                oldFolderCount = folderCount;
+            }
 
             if ((Input.GetKeyUp(KeyCode.RightArrow)) ||
                 (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstickRight))) {
@@ -73,10 +146,10 @@ public class MusicSelectManager : MonoBehaviour
                 selectedMusic();
             }
             if (Input.GetKey(KeyCode.RightArrow)) {
-                moveRecords(0.2f);
+                moveRecords(0.2f, MIN_SHOE_RECORD_X, MAX_SHOE_RECORD_X);
             }
             if (Input.GetKey(KeyCode.LeftArrow)) {
-                moveRecords(-0.2f);
+                moveRecords(-0.2f, MIN_SHOE_RECORD_X, MAX_SHOE_RECORD_X);
             }
             //スティックを倒した瞬間だけ音を鳴らす
             if ((OVRInput.GetDown(OVRInput.RawButton.RThumbstickLeft)) ||
@@ -84,7 +157,7 @@ public class MusicSelectManager : MonoBehaviour
                 playSe(SE_MOVE);
             }
             if (stickR.x != 0) {
-                moveRecords(stickR.x);
+                moveRecords(stickR.x, MIN_SHOE_RECORD_X, MAX_SHOE_RECORD_X);
             }
             musicSelect.showInfomation(listMusicDict[folderCount]);
             moveSelectCircle();
@@ -94,10 +167,12 @@ public class MusicSelectManager : MonoBehaviour
 
     //選択サークルを移動させる
     private void moveSelectCircle() {
-        Transform t = this.listRecordObject[folderCount].GetComponent<Transform>();
+        if (localRecordCount == -1) return;
+        Transform t = this.listRecordObject[localRecordCount].GetComponent<Transform>();
         Vector3 pos = t.transform.position;
         Vector3 ang = t.transform.localEulerAngles;
         moveSelectMsg(pos, ang);
+        moveScoreMsg(pos, ang);
         selectCircleAng += 0.2f;
         if (selectCircleAng > 360.0f) selectCircleAng = 0;
         ang.z = selectCircleAng;
@@ -109,16 +184,62 @@ public class MusicSelectManager : MonoBehaviour
         GameObject.Find("PressButton").GetComponent<Transform>().transform.position = pos;
         GameObject.Find("PressButton").GetComponent<Transform>().transform.localEulerAngles = ang;
     }
+    //スコア表示のウィンドウの移動
+    private void moveScoreMsg(Vector3 pos, Vector3 ang) {
+        GameObject.Find("SelectScore").GetComponent<Transform>().transform.position = pos;
+        GameObject.Find("SelectScore").GetComponent<Transform>().transform.localEulerAngles = ang;
+    }
+
+    //スコアの表示
+    private void showScore() {
+        GameObject.Find("HighScoreText").GetComponent<Text>().text = 
+            (listMusicDict[folderCount]["HighScore"] != "")? 
+            "High Score : " + (int.Parse(listMusicDict[folderCount]["HighScore"])).ToString("N0") :
+            "High Score : ";
+
+        GameObject.Find("MaxComboText").GetComponent<Text>().text =
+            (listMusicDict[folderCount]["MaxCombo"] != "") ?
+            "Max Combo : " + (int.Parse(listMusicDict[folderCount]["MaxCombo"])).ToString("N0") :
+            "Max Combo : ";
+        GameObject.Find("MaxCalorieText").GetComponent<Text>().text =
+            (listMusicDict[folderCount]["Calorie"] != "") ?
+            "Calorie : " + listMusicDict[folderCount]["Calorie"] + "kcal" :
+            "Calorie : ";
+    }
 
     //レコードの移動
-    private void moveRecords(float x) {
+    private void moveRecords(float velocity, float MIN_X, float MAX_X) {
         foreach (GameObject record in this.listRecordObject) {
             Vector3 pos = record.GetComponent<Transform>().transform.position;
             if (pos.z != this.recordZ) continue;
 
-            pos.x += x / 5;
+            pos.x += velocity / 5;
+            if (pos.x > MAX_X) {
+                pos.x = MIN_X + 0.1f;
+                showRecordMidNum++;
+                if (showRecordMidNum == listMusicDict.Count) showRecordMidNum = 0;
+                changeRecordData(record, 0);
+
+
+            }
+            else if (pos.x < MIN_X) {
+                pos.x = MAX_X - 0.1f;
+                showRecordMidNum--;
+                if (showRecordMidNum < 0) showRecordMidNum = listMusicDict.Count - 1;
+                changeRecordData(record, SHOW_RECOED_NUM - 1);
+            }
+
             record.GetComponent<Transform>().transform.position = pos;
         }
+    }
+
+    private void changeRecordData(GameObject record, int listCount) {
+        listShowRecordFolderCount = makeListShowRecord(showRecordMidNum, SHOW_RECOED_NUM);
+        int folderCount = listShowRecordFolderCount[listCount];
+        RecordObject rd = record.GetComponent<RecordObject>();
+        //Debug.Log("midNum : " + showRecordMidNum + " show_recoed_num :" + SHOW_RECOED_NUM);
+        rd.setDictMusicData(listMusicDict[folderCount]);
+        rd.showInfomation();
     }
 
     //曲の決定
@@ -144,30 +265,39 @@ public class MusicSelectManager : MonoBehaviour
         MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayManager.setDictMusicData(listMusicDict[folderCount]);
         musicPlayManager.TotalCalorie = this.totalCalorie;
+        musicPlayManager.setFolderCount(this.folderCount);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
-    //全てのレコードを描画
-    private List<GameObject> makeAllRecords(List<Dictionary<string, string>> listMusicDict, Vector3 pos) {
+    //見せるレコードを全て描画
+    private List<GameObject> makeAllRecords(
+        List<Dictionary<string, string>> listMusicDict, 
+        int[] listShowRecordFolderCount,
+        Vector3 pos) 
+    {
         List<GameObject> listRecordObject = new List<GameObject>();
         Vector3 oldPos = pos;
-        float recordDist = 0.5f;
-        pos.x = pos.x - (listMusicDict.Count * recordDist /2);
+        MAX_SHOE_RECORD_X = SHOW_RECOED_NUM * recordDist / 2;
+        MIN_SHOE_RECORD_X = -MAX_SHOE_RECORD_X;
 
-        for (int i = 0; i < listMusicDict.Count; i++) {
+        pos.x = pos.x - (SHOW_RECOED_NUM * recordDist /2);
+
+        for (int i = 0; i < listShowRecordFolderCount.Length; i++) {
+            int folderCount = listShowRecordFolderCount[i];
             pos.y = (i % 2 == 1) ? oldPos.y + recordDist : oldPos.y;
             pos.x += recordDist;
-            GameObject obj = makeRecord(listMusicDict[i], pos);
+            GameObject obj = makeRecord(listMusicDict[folderCount], pos, i);
             listRecordObject.Add(obj);
         }
         return listRecordObject;
     }
 
     //レコードの作成
-    private GameObject makeRecord(Dictionary<string, string> dictMusicData, Vector3 pos) {
+    private GameObject makeRecord(Dictionary<string, string> dictMusicData, Vector3 pos, int localRecordCount) {
         GameObject obj = Instantiate(RECORD_OBJECT) as GameObject;
         RecordObject rd = obj.GetComponent<RecordObject>();
         rd.setDictMusicData(dictMusicData);
+        rd.setLocalRecordCount(localRecordCount);
         rd.showInfomation();
         obj.transform.position = pos;
         return obj;
@@ -187,5 +317,28 @@ public class MusicSelectManager : MonoBehaviour
     private void showTotalCalorie(float totalCalorie) {
         GameObject.Find("TotalCalorieText").GetComponent<Text>().text = totalCalorie.ToString("f1") + " kcal";
     }
+
+    //表示する曲番号の配列を作る
+    private int[] makeListShowRecord(int midNum, int maxFolderCount) {
+        int[] listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
+        int index = midNum - SHOW_RECOED_NUM / 2;
+
+        for (int i = 0; i < SHOW_RECOED_NUM; i++) {
+            int folderCount = index + i;
+            if(folderCount < 0) {
+                //配列のおしりの方から取ってくる
+                folderCount += maxFolderCount;
+            }
+            else if (folderCount >= maxFolderCount) {
+                //配列のゼロのほうから取ってくる
+                folderCount -= maxFolderCount;
+            }
+            listShowRecordFolderCount[i] = folderCount;
+        }
+        return listShowRecordFolderCount;
+    }
+
+
+
 
 }

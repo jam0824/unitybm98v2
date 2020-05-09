@@ -28,7 +28,8 @@ public class MusicPlayCalorie : MonoBehaviour
     //カロリー計算
     private void calcCalorie() {
         float nowSec = Time.time - startSec;
-        float nowPunchPerSec = (musicPlayData.getGreatNum() + musicPlayData.getGoodNum()) / nowSec;
+        float nowPunchPerSec = 
+            (musicPlayData.getExcellentNum() + musicPlayData.getGreatNum() + musicPlayData.getGoodNum()) / nowSec;
         float nowMETs = this.METs * nowPunchPerSec / this.PUNCH_PER_SEC;
         float calorie = nowMETs * this.WEIGHT * (nowSec / 3600.0f) * 1.05f;
         musicPlayData.METs = nowMETs;

@@ -9,6 +9,7 @@ public class UiController : MonoBehaviour
     private MusicPlayData musicPlayData;
     private Text calorieText;
     private Text metsText;
+    private Text scoreText;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
@@ -26,6 +27,7 @@ public class UiController : MonoBehaviour
         musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
         calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
         metsText = GameObject.Find("METsArea").GetComponent<Text>();
+        scoreText = GameObject.Find("ScoreArea").GetComponent<Text>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
         dict_object.Add("state", state);
@@ -51,6 +53,11 @@ public class UiController : MonoBehaviour
         updateSpriteArea();
         calorieText.text = redrawCalorieText();
         metsText.text = redrawMetsText();
+        scoreText.text = redrawScore();
+    }
+
+    private string redrawScore() {
+        return musicPlayData.Score.ToString("N0") + " / " + musicPlayData.HighScore.ToString("N0");
     }
 
     //ファイル読み込み。たぶんどこでも使ってない

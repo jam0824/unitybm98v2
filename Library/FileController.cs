@@ -32,6 +32,10 @@ namespace FileController {
             return File.Exists(fullPath);
         }
 
+        public static bool isFolderExist(string folderPath) {
+            return Directory.Exists(folderPath);
+        }
+
         public static bool changeFileName(string fileName, string beforeChar, string afterChar) {
             if (!File.Exists(fileName)) return false;
             string afterFileName = fileName.Replace(beforeChar, afterChar);
@@ -47,6 +51,52 @@ namespace FileController {
             }
             
         }
+
+        public static bool writeCsv(string filePath, List<Dictionary<string, string>> listDict) {
+            string writeData = "";
+            foreach (string key in listDict[0].Keys) {
+                writeData += key + ",";
+            }
+            writeData = writeData.TrimEnd(',') + "\n";
+
+            foreach (Dictionary<string, string> line in listDict) {
+                string writeLine = "";
+                foreach (string value in line.Values) {
+                    writeLine += value + ",";
+                }
+                writeLine = writeLine.TrimEnd(',') + "\n";
+                writeData += writeLine;
+            }
+            try {
+                File.WriteAllText(filePath, writeData);
+                return true;
+            }
+            catch(Exception e) {
+                Debug.LogError("Faild to write file : " + filePath);
+                return false;
+            }
+        }
+
+        //ヘッダーにラベルが書いてあるcsvをList<Dictionary<string, string>>にして返す
+        public static List<Dictionary<string, string>> readCsv(string filePath) {
+            List<Dictionary<string, string>> listReturn = new List<Dictionary<string, string>>();
+            string[] lines = File.ReadAllLines(filePath);
+            string[] header = lines[0].Split(',');
+
+            for (int i = 1; i < lines.Length; i++) {
+                string line = lines[i].Trim();
+                
+
+                Dictionary<string, string> dictTmp = new Dictionary<string, string>();
+                string[] values = line.Split(',');
+                for(int j = 0; j < header.Length; j++){
+                    dictTmp.Add(header[j], values[j]);
+                }
+                listReturn.Add(dictTmp);
+            }
+            return listReturn;
+        }
+       
 
         public static string[] fileConvertUTF8(string filePath) {
             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);

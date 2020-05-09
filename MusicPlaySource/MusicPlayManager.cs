@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityBm98Utilities;
 using UnityBm98Config;
+using FileController;
+using System.IO;
 
 public class MusicPlayManager : MonoBehaviour
 {
@@ -25,12 +27,14 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] private string music_bms;
     [SerializeField] public List<AudioClip> listSeClear;
     [SerializeField] public List<AudioClip> listSeFailed;
+    [SerializeField] public string SAVE_DATA_FILE;
 
     public float MUSIC_OBJ_Y;
 
     private BmsConverter bmsConverter;
     private MusicPlay musicPlay;
     private MusicPlayPower musicPlayPower;
+    private MusicPlayData musicPlayData;
     private AnimationManager animationManager;
 
     private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
@@ -40,6 +44,7 @@ public class MusicPlayManager : MonoBehaviour
     private int KEY_NUM = 60; //BMSで宣言されているキーの数
     private int MAX_OBJ_NUM = 42000; //配列の最大数(7分)
     private int playKeyNum; //BMSのKEY数（5key or 7key)
+    private string hitHandStatus = ""; //直近の弾をどちらの手でたたいたか
 
     private Dictionary<string, string> dict_info; //BMSの上の情報部分が入る
     private int frameCount = 0; //frame数計算
@@ -49,6 +54,7 @@ public class MusicPlayManager : MonoBehaviour
     private bool isGaming = true;
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
+    private int folderCount = 0; //選択した曲番号
 
     //別のシーンから呼ばれた時に入れる
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
@@ -90,6 +96,16 @@ public class MusicPlayManager : MonoBehaviour
     public void addMovingDistance(float dist) {
         this.movingDistance += dist;
     }
+    public string getHitHandStatus() {
+        return this.hitHandStatus;
+    }
+    public void setHitHandStatus(string tag) {
+        this.hitHandStatus = tag;
+    }
+    public void setFolderCount(int folderCount) {
+        this.folderCount = folderCount;
+    }
+    
 
     public int PlayKeyNum {
         set { this.playKeyNum = value; }
@@ -112,14 +128,23 @@ public class MusicPlayManager : MonoBehaviour
         bmsConverter = this.GetComponent<BmsConverter>();
         musicPlay = this.GetComponent<MusicPlay>();
         musicPlayPower = this.GetComponent<MusicPlayPower>();
+        musicPlayData = this.GetComponent<MusicPlayData>();
         animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
         MUSIC_FOLDER_PATH = config.getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
+        setMusicData(dictMusicData);
         frameCount = 0;
         if (dictMusicData != null) {
             this.music_folder = dictMusicData["music_folder"];
             this.music_bms = dictMusicData["music_bms"];
         }
+    }
+    //ハイスコアなどを呼び出す
+    private void setMusicData(Dictionary<string, string> dictMusicData) {
+        if ((dictMusicData == null)  || (!dictMusicData.ContainsKey("HighScore"))) return;
+
+        if (dictMusicData["HighScore"] != "")
+            musicPlayData.HighScore = int.Parse(dictMusicData["HighScore"]);
     }
 
     //ヘッドセットからの距離でMusicObjectの高さを決定する
@@ -159,6 +184,7 @@ public class MusicPlayManager : MonoBehaviour
         this.playKeyNum = bmsConverter.PlayKeyNum;
 
         Debug.Log("最終フレーム : " + bmsConverter.LastFrameNo);
+
         isUpdate = true;
     }
 
@@ -207,6 +233,8 @@ public class MusicPlayManager : MonoBehaviour
         //歓声
         audioSource.clip = Resources.Load<AudioClip>("src/success");
         audioSource.PlayOneShot(audioSource.clip);
+        //スコア保存
+        saveData();
         //成功アニメーションスタート
         animationManager.startFinishAnimation();
     }
@@ -239,6 +267,7 @@ public class MusicPlayManager : MonoBehaviour
         // シーン切り替え後のスクリプトを取得
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(totalCalorie);
+        musicSelectManager.setFolderCount(this.folderCount);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
@@ -248,4 +277,45 @@ public class MusicPlayManager : MonoBehaviour
         return listAudioClip[num];
     }
 
+    //スコアデータを保存する
+    private void saveData() {
+        string filePath = UnityBm98Config.config.getSaveDataFolderPath() + SAVE_DATA_FILE;
+        List<Dictionary<string, string>> listData = new List<Dictionary<string, string>>();
+
+        if (File.Exists(filePath)) {
+            listData = fileController.readCsv(filePath);
+            bool isExist = false;
+            for (int i = 0; i < listData.Count; i++) {
+                if ((listData[i]["music_folder"] == this.music_folder) &&
+                    (listData[i]["music_bms"] == this.music_bms)) {
+                    if(musicPlayData.HighScore > int.Parse(listData[i]["HighScore"]))
+                        listData[i]["HighScore"] = musicPlayData.HighScore.ToString();
+                    if(musicPlayData.MaxCombo > int.Parse(listData[i]["MaxCombo"]))
+                        listData[i]["MaxCombo"] = musicPlayData.MaxCombo.ToString();
+                    if (musicPlayData.getCalorie() > float.Parse(listData[i]["Calorie"]))
+                        listData[i]["Calorie"] = musicPlayData.getCalorie().ToString("f1");
+                    listData[i]["Rank"] = "A";
+                    isExist = true;
+                    break;
+                }
+            }
+            if (!isExist) listData.Add(makeData());
+        }
+        else {
+            listData.Add(makeData());
+        }
+        bool isOk = fileController.writeCsv(filePath, listData);
+    }
+
+
+    private Dictionary<string, string> makeData() {
+        Dictionary<string, string> saveData = new Dictionary<string, string>();
+        saveData.Add("music_folder", this.music_folder);
+        saveData.Add("music_bms", this.music_bms);
+        saveData.Add("HighScore", musicPlayData.HighScore.ToString());
+        saveData.Add("MaxCombo", musicPlayData.MaxCombo.ToString());
+        saveData.Add("Calorie", musicPlayData.getCalorie().ToString("f1"));
+        saveData.Add("Rank", "A");
+        return saveData;
+    }
 }

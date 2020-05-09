@@ -46,12 +46,11 @@ public class MusicObject : MonoBehaviour
         if(!isSound) {
             if ((this.transform.position.z < -GOOD_LINE) && (!isPoor)) {
                 musicPlayData.setComboNum(0);
-                musicPlayData.addPoorNum();
-                musicPlayPower.calcPoor();
-                ui.setStatus("poor");
+                processStatus("poor");
                 isPoor = true;
             }
 
+            //デッドラインより後ろでオブジェクト削除
             if(this.transform.position.z <= DEAD_LINE) {
                 Destroy(this.gameObject);
             }
@@ -70,9 +69,11 @@ public class MusicObject : MonoBehaviour
 
     //hit tagのオブジェクトとぶつかったら音を鳴らしてヒットマークを出す
     void OnTriggerEnter(Collider other) {
-        if ((other.gameObject.tag == "hit")&&(!isSound)) {
+        if (((other.gameObject.tag == "leftHand") || (other.gameObject.tag == "rightHand") ) && 
+            (!isSound)) 
+        {
             transparentObject(this.gameObject);
-            judge();
+            judge(other.gameObject.tag);
             hit();
             sound();
             isSound = true;
@@ -85,24 +86,36 @@ public class MusicObject : MonoBehaviour
     }
 
     //結果の判定
-    void judge() {
+    void judge(string tag) {
         musicPlayData.addComboNum();
         float z = Mathf.Abs(this.transform.position.z);
         if (z <= GREAT_LINE) {
-            ui.setStatus("great");
-            musicPlayData.addGreatNum();
-            musicPlayPower.calcGreat();
+            string status = "";
+            if (tag == m.getHitHandStatus()) {
+                status = "great";
+            }
+            else {
+                //交互の手を使った場合はexcellent
+                status = "excellent";
+                m.setHitHandStatus(tag);
+            }
+            processStatus(status);
         }
         else if ((z > GREAT_LINE) && (z < GOOD_LINE)) {
-            ui.setStatus("good");
-            musicPlayData.addGoodNum();
-            musicPlayPower.calcGood();
+            processStatus("good");
         }
         else {
-            ui.setStatus("poor");
-            musicPlayData.addPoorNum();
-            musicPlayPower.calcGreat();
+            musicPlayData.setComboNum(0);
+            processStatus("poor");
+            isPoor = true;
         }
+    }
+
+    void processStatus(string status) {
+        ui.setStatus(status);
+        musicPlayData.addScore(status);
+        musicPlayData.addComboNum(status);
+        musicPlayPower.calcPower(status);
     }
 
     //ヒットスパーク

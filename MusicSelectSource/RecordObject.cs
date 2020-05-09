@@ -10,6 +10,7 @@ public class RecordObject : MonoBehaviour
     private Dictionary<string, string> dictMusicData;
     private MusicSelectManager musicSelectManager;
     private OVRGrabbable ovrGrabbable;
+    private int localRecordCount; //曲選択画面で表示されているレコードの何番目か
     Transform[] transformArray;
 
     void Start() 
@@ -19,6 +20,9 @@ public class RecordObject : MonoBehaviour
     }
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
         this.dictMusicData = dictMusicData;
+    }
+    public void setLocalRecordCount(int localRecordCount) {
+        this.localRecordCount = localRecordCount;
     }
 
     public void showInfomation() {
@@ -59,6 +63,7 @@ public class RecordObject : MonoBehaviour
             if (!this.isGrabbled) {
                 Bm98Debug.Instance.Log(dictMusicData["music_count"] + " : " + dictMusicData["#TITLE"]);
                 musicSelectManager.folderCount = int.Parse(dictMusicData["music_count"]);
+                musicSelectManager.localRecordCount = this.localRecordCount;
                 playSe();
                 this.isGrabbled = true;
             }

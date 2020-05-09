@@ -16,6 +16,7 @@ public class MusicPlayPower : MonoBehaviour
     private float lineYellow = 0.25f;
     private float lineRed = 0.125f;
 
+    private float excellent = 2.0f;
     private float great = 1.0f;
     private float good = 0.5f;
     private float poor = -10.0f;
@@ -41,16 +42,23 @@ public class MusicPlayPower : MonoBehaviour
         return this.power;
     }
 
-    public void calcGreat() {
-        power += great;
+    //パワーの計算
+    public void calcPower(string status) {
+        switch (status) {
+            case "excellent":
+                power += excellent;
+                break;
+            case "great":
+                power += great;
+                break;
+            case "good":
+                power += good;
+                break;
+            case "poor":
+                power += poor;
+                break;
+        }
         if (power >= maxPower) power = maxPower;
-    }
-    public void calcGood() {
-        power += good;
-        if (power >= maxPower) power = maxPower;
-    }
-    public void calcPoor() {
-        power += poor;
         if (power < 0) {
             isFailed = true;
             power = 0;

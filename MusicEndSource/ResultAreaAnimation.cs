@@ -37,7 +37,7 @@ public class ResultAreaAnimation : MonoBehaviour
         if (!isAnimation) return;
 
         liveCount++;
-        if (liveCount % frameRate == 0) {
+        if (liveCount % (frameRate / 2) == 0) {
             animCount++;
             switch (animCount) {
                 case 1:
@@ -45,18 +45,24 @@ public class ResultAreaAnimation : MonoBehaviour
                     
                     break;
                 case 2:
-                    drawMaxCombo(musicPlayData.getMaxComboNum());
+                    drawMaxCombo(musicPlayData.MaxCombo);
                     break;
                 case 3:
-                    drawGreat(musicPlayData.getGreatNum());
+                    drawExcellent(musicPlayData.getExcellentNum());
                     break;
                 case 4:
-                    drawGood(musicPlayData.getGoodNum());
+                    drawGreat(musicPlayData.getGreatNum());
                     break;
                 case 5:
-                    drawPoor(musicPlayData.getPoorNum());
+                    drawGood(musicPlayData.getGoodNum());
                     break;
                 case 6:
+                    drawPoor(musicPlayData.getPoorNum());
+                    break;
+                case 7:
+                    drawLike(musicPlayData.Score);
+                    break;
+                case 8:
                     drawCalorie(musicPlayData.getCalorie());
                     break;
             }
@@ -65,6 +71,10 @@ public class ResultAreaAnimation : MonoBehaviour
 
     private void drawMaxCombo(int num) {
         GameObject.Find("MaxComboNum").GetComponent<Text>().text = num.ToString();
+        playSe(seCombo);
+    }
+    private void drawExcellent(int num) {
+        GameObject.Find("ExcellentNum").GetComponent<Text>().text = num.ToString();
         playSe(seCombo);
     }
     private void drawGreat(int num) {
@@ -81,6 +91,10 @@ public class ResultAreaAnimation : MonoBehaviour
     }
     private void drawTotalNotes(int num) {
         GameObject.Find("TotalNotesNum").GetComponent<Text>().text = num.ToString();
+        playSe(seCombo);
+    }
+    private void drawLike(int score) {
+        GameObject.Find("LikeNum").GetComponent<Text>().text = score.ToString("N0");
         playSe(seCombo);
     }
     private void drawCalorie(float calorie) {
