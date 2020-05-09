@@ -66,8 +66,9 @@ Push A button to start the music.
   
 
 # History
+
+- 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation.
 - 20200507 : Corresponded ".bml", Fixed reading music bug at music select scene.
-- 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation
 - 20200506 : Changed the calorie UI.
 - 20200505 : Fixed Changing BPM channel(03) bug. 
 - 20200504 : First release.
