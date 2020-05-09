@@ -51,7 +51,9 @@ public class RecordObject : MonoBehaviour
                         string levelName = getLevelImageFileName(int.Parse(dictMusicData["#PLAYLEVEL"]));
                         t.GetComponent<Image>().sprite = Resources.Load<Sprite>("src/MusicSelect/" + levelName);
                     }
-                        
+                    break;
+                case "MusicNoText":
+                    t.gameObject.GetComponent<Text>().text = "No." + dictMusicData["music_count"];
                     break;
             }
         }

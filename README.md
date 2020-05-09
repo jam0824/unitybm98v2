@@ -1,6 +1,9 @@
 # Download
 You can download latest apk below link.  
 <https://drive.google.com/drive/folders/1Al4NRgsqriaBL-8kN-QFQo6oYDXCFwPT>  
+
+SideQuest  
+<https://sidequestvr.com/app/942/bmsfitness>  
   
 
 Japanese explanation  
@@ -66,7 +69,7 @@ Push A button to start the music.
   
 
 # History
-
+- 20200509_2 : Bug fix : Fixed moving records bug.(There was something wrong with the way the records were arranged.)
 - 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation.
 - 20200507 : Corresponded ".bml", Fixed reading music bug at music select scene.
 - 20200506 : Changed the calorie UI.

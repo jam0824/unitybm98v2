@@ -216,16 +216,16 @@ public class MusicSelectManager : MonoBehaviour
             pos.x += velocity / 5;
             if (pos.x > MAX_X) {
                 pos.x = MIN_X + 0.1f;
-                showRecordMidNum++;
-                if (showRecordMidNum == listMusicDict.Count) showRecordMidNum = 0;
+                showRecordMidNum--;
+                if (showRecordMidNum < 0) showRecordMidNum = listMusicDict.Count - 1;
                 changeRecordData(record, 0);
 
 
             }
             else if (pos.x < MIN_X) {
                 pos.x = MAX_X - 0.1f;
-                showRecordMidNum--;
-                if (showRecordMidNum < 0) showRecordMidNum = listMusicDict.Count - 1;
+                showRecordMidNum++;
+                if (showRecordMidNum == listMusicDict.Count) showRecordMidNum = 0;
                 changeRecordData(record, SHOW_RECOED_NUM - 1);
             }
 
@@ -234,10 +234,10 @@ public class MusicSelectManager : MonoBehaviour
     }
 
     private void changeRecordData(GameObject record, int listCount) {
-        listShowRecordFolderCount = makeListShowRecord(showRecordMidNum, SHOW_RECOED_NUM);
+        listShowRecordFolderCount = makeListShowRecord(showRecordMidNum, listMusicDict.Count);
         int folderCount = listShowRecordFolderCount[listCount];
         RecordObject rd = record.GetComponent<RecordObject>();
-        //Debug.Log("midNum : " + showRecordMidNum + " show_recoed_num :" + SHOW_RECOED_NUM);
+        Debug.Log("midNum : " + showRecordMidNum + " show_recoed_num :" + SHOW_RECOED_NUM);
         rd.setDictMusicData(listMusicDict[folderCount]);
         rd.showInfomation();
     }
@@ -318,14 +318,15 @@ public class MusicSelectManager : MonoBehaviour
         GameObject.Find("TotalCalorieText").GetComponent<Text>().text = totalCalorie.ToString("f1") + " kcal";
     }
 
-    //表示する曲番号の配列を作る
+    //表示する曲番号の配列を作る。中央値、曲ナンバーの最大値
     private int[] makeListShowRecord(int midNum, int maxFolderCount) {
         int[] listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
         int index = midNum - SHOW_RECOED_NUM / 2;
-
+        //Debug.Log("******************************" + midNum +"********************************");
+        //Debug.Log("index = " + index);
         for (int i = 0; i < SHOW_RECOED_NUM; i++) {
             int folderCount = index + i;
-            if(folderCount < 0) {
+            if (folderCount < 0) {
                 //配列のおしりの方から取ってくる
                 folderCount += maxFolderCount;
             }
@@ -333,6 +334,7 @@ public class MusicSelectManager : MonoBehaviour
                 //配列のゼロのほうから取ってくる
                 folderCount -= maxFolderCount;
             }
+            //Debug.Log("i=" + i + " folderCount=" + folderCount);
             listShowRecordFolderCount[i] = folderCount;
         }
         return listShowRecordFolderCount;
