@@ -10,6 +10,7 @@ public class MusicObject : MonoBehaviour
     private MusicPlayPower musicPlayPower;
     private float GOOD_LINE;
     private float GREAT_LINE;
+    private float MIN_FPS = 65.0f;
     private bool isPoor = false;
     private AudioSource audio;
     private UiController ui;

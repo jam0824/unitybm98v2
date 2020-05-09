@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class MusicPlay : MonoBehaviour
 {
     private string[,] list_music_data;
+    private Dictionary<string, string> dictMovie;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, AudioClip> dict_audio;
 
@@ -31,6 +33,9 @@ public class MusicPlay : MonoBehaviour
         
     }
 
+    public void setDictMovie(Dictionary<string, string> dictMovie) {
+        this.dictMovie = dictMovie;
+    }
     public void setDictAudio(Dictionary<string, AudioClip> dict_audio) {
         this.dict_audio = dict_audio;
     }
@@ -98,6 +103,12 @@ public class MusicPlay : MonoBehaviour
             string[] tmp = imageName.Split(',');
             imageName = tmp[0];
         }
+        //動画だったら
+        if (dictMovie.ContainsKey(imageName)) {
+            playVideo();
+            return;
+        }
+        //画像がない場合
         if (!dict_image.ContainsKey(imageName)) {
             Debug.Log("#BMP" + imageName + "に該当する画像がありませんでした");
             return;
@@ -114,6 +125,16 @@ public class MusicPlay : MonoBehaviour
             Debug.Log(e);
         }
     }
+    //動画再生
+    private void playVideo() {
+        GameObject movieObject = Instantiate(musicPlayManager.movieObj) as GameObject;
+        movieObject.transform.localScale = new Vector3(
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE,
+            musicPlayManager.MUSIC_OBJ_SIZE
+        );
+    }
+    
 
     //MusicObjectが進む速さを求める
     public float setMusicObjVec(float byoushi, int frame, float BPM) {

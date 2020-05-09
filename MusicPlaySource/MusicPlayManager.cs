@@ -19,6 +19,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public GameObject musicObjOrange;
     [SerializeField] public GameObject bgmObj;
     [SerializeField] public GameObject bpmChangeObj;
+    [SerializeField] public GameObject movieObj;
     [SerializeField] public float MUSIC_WIDTH; //弾が飛んでくる範囲
     [SerializeField] public float GOOD_LINE; //GOOD判定の距離（絶対値）
     [SerializeField] public float GREAT_LINE; //GREAT判定の距離（絶対値）
@@ -178,6 +179,8 @@ public class MusicPlayManager : MonoBehaviour
         musicPlay.setDictImage(
             bmsConverter.readImageFiles(lines, MUSIC_FOLDER_PATH + musicFolder)
         );
+        //動画データ読み込み
+        musicPlay.setDictMovie(bmsConverter.dictMovie);
         //弾の速さ計算
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
         //5 or 7 keyかを取得

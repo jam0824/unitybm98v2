@@ -6,11 +6,15 @@ using System.IO;
 using B83.Image.BMP;
 using System;
 using FileController;
+using UnityEngine.Video;
+using UnityEngine.UI;
 
 public class BmsConverter : MonoBehaviour
 {
+    public Dictionary<string, string> dictMovie;
     private MusicPlayManager musicPlayManager;
     private int playKeyNum = 5;
+
     Dictionary<string, string> dicChangeChars;
 
     private string beforeChar = "#";
@@ -34,6 +38,7 @@ public class BmsConverter : MonoBehaviour
     void Start()
     {
         musicPlayManager = this.GetComponent<MusicPlayManager>();
+        dictMovie = new Dictionary<string, string>();
         dicChangeChars = getDicChangeChars();
     }
 
@@ -132,12 +137,36 @@ public class BmsConverter : MonoBehaviour
                 string tmp = line.Replace("#BMP", "");
                 string[] command = tmp.Split(' ');
                 if (fileController.isFileExist(music_folder + "/" + command[1])) {
+                    //読み込めない動画だった場合
+                    if ((command[1].Contains(".mpg")) || (command[1].Contains(".mpeg"))) {
+                        continue;
+                    }
+                    else if (command[1].Contains(".mp4")) {
+                        //mp4なら読み込む
+                        loadMovie(command[0], music_folder + "/" + command[1]);
+                        continue;
+                    }
+                    //画像だった場合
                     dict_image.Add(command[0], getSprite(music_folder + "/" + command[1]));
                 }
             }
 
         }
         return dict_image;
+    }
+
+    private void loadMovie(string key, string url) {
+        this.dictMovie.Add(key, url);
+        loadMovieMain("MovieRenderImageLeft", url);
+        loadMovieMain("MovieRenderImageRight", url);
+    }
+    private void loadMovieMain(string objName, string url) {
+        GameObject obj = GameObject.Find(objName);
+        RawImage ri = obj.GetComponent<RawImage>();
+        ri.enabled = true;
+        VideoPlayer videoPlayer = obj.GetComponent<VideoPlayer>();
+        videoPlayer.playOnAwake = false;
+        videoPlayer.url = url;
     }
     
     //画像ファイルを外部から読み込む
