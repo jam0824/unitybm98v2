@@ -61,9 +61,13 @@ Push A button to start the music.
 
 3. If you want to return to the music selection screen during the game, you can do so by pressing B button.
 
+4. If you hit the ball with your alternate hand, it will be "Excellent". This is 10 times the score of "Great".  
+![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200509/20200509144510.jpg)  
+  
 
 # History
 - 20200507 : Corresponded ".bml", Fixed reading music bug at music select scene.
+- 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation
 - 20200506 : Changed the calorie UI.
 - 20200505 : Fixed Changing BPM channel(03) bug. 
 - 20200504 : First release.
