@@ -69,6 +69,7 @@ Push A button to start the music.
   
 
 # History
+- 20200510 : MP4 is now supported.
 - 20200509_2 : Bug fix : Fixed moving records bug.(There was something wrong with the way the records were arranged.)
 - 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation.
 - 20200507 : Corresponded ".bml", Fixed reading music bug at music select scene.
