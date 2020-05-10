@@ -99,7 +99,7 @@ public class MusicPlay : MonoBehaviour
         b.setBpmRate(bpmRate); 
     }
 
-    //07が来て、かつ動画だったら
+    //チャンネル07が来て、かつ動画だった時の処理
     private void porcessImageSevenPart(int key_no, int frame_no) {
         string imageName = list_music_data[key_no, frame_no];
         //動画だったら
@@ -109,7 +109,7 @@ public class MusicPlay : MonoBehaviour
         }
     }
 
-    //画像が来たときの処理
+    //チャンネル04の画像が来たときの処理
     private void processImagePart(int key_no, int frame_no) {
         string imageName = list_music_data[key_no, frame_no];
         //画像が同じフレームに複数設定される場合があるのでその際は最初の要素のみ取得
@@ -139,7 +139,7 @@ public class MusicPlay : MonoBehaviour
             Debug.Log(e);
         }
     }
-    //動画再生
+    //動画再生オブジェクトを投げる
     private void playVideo() {
         GameObject movieObject = Instantiate(musicPlayManager.movieObj) as GameObject;
         movieObject.transform.localScale = new Vector3(

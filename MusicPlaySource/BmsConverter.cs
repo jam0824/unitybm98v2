@@ -137,7 +137,7 @@ public class BmsConverter : MonoBehaviour
                 string tmp = line.Replace("#BMP", "");
                 string[] command = tmp.Split(' ');
                 if (fileController.isFileExist(music_folder + "/" + command[1])) {
-                    //読み込めない動画だった場合
+                    //読み込めない動画だった場合は何もしない
                     if ((command[1].Contains(".mpg")) || (command[1].Contains(".mpeg"))) {
                         continue;
                     }
@@ -155,7 +155,9 @@ public class BmsConverter : MonoBehaviour
         return dict_image;
     }
 
+    //動画は予めurlを入れてスタンバイさせておく
     private void loadMovie(string key, string url) {
+        //dictMovieにkeyとurlは保持しておく
         this.dictMovie.Add(key, url);
         loadMovieMain("MovieRenderImageLeft", url);
         loadMovieMain("MovieRenderImageRight", url);
@@ -333,7 +335,7 @@ public class BmsConverter : MonoBehaviour
         }
         return list_music_data;
     }
-    //そのフレーム以降の曲データの格納場所をBpmRate分だけずらす
+    //そのフレーム以降の曲データの格納場所をBpmRate分だけずらす。音符間をBPMの差分倍率分伸び縮みさせる思想。
     private string[,] changeBpmMain(
         string[,] list_music_data, 
         float BpmRate,

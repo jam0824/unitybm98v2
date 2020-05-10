@@ -44,6 +44,7 @@ public class MusicSelectSaveFileLoader : MonoBehaviour
         return listMusicDict;
     }
 
+    //music_folderとmusic_bmsが一致したセーブデータを返す
     private Dictionary<string, string> getDictFromSaveData(
         string folder,
         string file,

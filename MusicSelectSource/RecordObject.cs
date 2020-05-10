@@ -21,6 +21,7 @@ public class RecordObject : MonoBehaviour
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
         this.dictMusicData = dictMusicData;
     }
+    //曲選択画面で表示用レコードの何番目なのか保持。（選択サークル表示のため）
     public void setLocalRecordCount(int localRecordCount) {
         this.localRecordCount = localRecordCount;
     }
@@ -80,6 +81,7 @@ public class RecordObject : MonoBehaviour
         audioSource.PlayOneShot(AUDIO_DECIDE);
     }
 
+    //曲の難易度はPlayLevelから出す
     string getLevelImageFileName(int dificurity) {
         string level = "easy";
         if ((dificurity >= 4) && (dificurity <= 5)) {

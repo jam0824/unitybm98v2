@@ -310,7 +310,7 @@ public class MusicPlayManager : MonoBehaviour
         bool isOk = fileController.writeCsv(filePath, listData);
     }
 
-
+    //データがないときは作る
     private Dictionary<string, string> makeData() {
         Dictionary<string, string> saveData = new Dictionary<string, string>();
         saveData.Add("music_folder", this.music_folder);

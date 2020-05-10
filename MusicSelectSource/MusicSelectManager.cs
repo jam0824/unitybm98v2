@@ -84,6 +84,7 @@ public class MusicSelectManager : MonoBehaviour
         StartCoroutine(startSeDelayMethod(2.0f, SE_START));
     }
 
+    //持ってる曲がない、フォルダがないときは説明用オブジェクトを表示
     private void makeZeroObject() {
         GameObject obj = Instantiate(ZERO_OBJECT) as GameObject;
     }
@@ -233,6 +234,7 @@ public class MusicSelectManager : MonoBehaviour
         }
     }
 
+    //レコードが端まで行って、逆の端に移動するときの処理
     private void changeRecordData(GameObject record, int listCount) {
         listShowRecordFolderCount = makeListShowRecord(showRecordMidNum, listMusicDict.Count);
         int folderCount = listShowRecordFolderCount[listCount];
@@ -319,6 +321,9 @@ public class MusicSelectManager : MonoBehaviour
     }
 
     //表示する曲番号の配列を作る。中央値、曲ナンバーの最大値
+    //考え方。まずは表示用に30個のリストがある。
+    //そこの真ん中の数字（全体の曲番号で指定）を基準にindex0から曲番号を入れていく。
+    //もし曲番号が0未満だったら曲番号の最後の方に戻る。曲番号がマックスだったらゼロから入れる
     private int[] makeListShowRecord(int midNum, int maxFolderCount) {
         int[] listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
         int index = midNum - SHOW_RECOED_NUM / 2;
