@@ -48,7 +48,7 @@ For example, I like these songs.
 3. **Please install "bmsfitness.apk", you can find out how to install apk at the following site for example.**  
 <https://www.androidcentral.com/how-sideload-apps-oculus-quest>  
 
-4. **You can play this game at "Library -> Unknown Sources -> unitybm98v2".** 
+4. **You can play this game at "Library -> Unknown Sources -> BMSFitness".** 
 
 
 ## How to play
