@@ -1,4 +1,5 @@
-# Download
+# BMSFitness
+## Download
 You can download latest apk below link.  
 <https://drive.google.com/drive/folders/1Al4NRgsqriaBL-8kN-QFQo6oYDXCFwPT>  
 
@@ -10,7 +11,7 @@ Japanese explanation
 <http://testerchan.hatenadiary.com/entry/2020/05/04/222942>
   
 
-# What is BMSFitness?
+## What is BMSFitness?
 It's a fitness game like BOXVR.  
 Balls will fly along with the song, so hit it at the right time.  
 Also, you can see how many calories you've used.
@@ -22,13 +23,13 @@ You can play the game with those files.
 
 [What is BMS?](https://fileinfo.com/extension/bms)  
 
-# Youtube
+## Youtube
 You can check this game at youtube.  
 
-[![](https://img.youtube.com/vi/q6tGXoZBBC8/0.jpg)](https://www.youtube.com/watch?v=q6tGXoZBBC8)
+[![](https://img.youtube.com/vi/Zovg2ggOd-o/0.jpg)](https://www.youtube.com/watch?v=Zovg2ggOd-o)
 
 
-# Installation  
+## Installation  
 1. **Please create "bmsfitness" folder under the internal storage of Oculus Quest.**  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211600.png)  
   
@@ -50,7 +51,7 @@ For example, I like these songs.
 4. **You can play this game at "Library -> Unknown Sources -> unitybm98v2".** 
 
 
-# How to play
+## How to play
 1. You can move records with the right stick.  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504212801.jpg)  
   
@@ -66,9 +67,16 @@ Push A button to start the music.
 
 4. If you hit the ball with your alternate hand, it will be "Excellent". This is 10 times the score of "Great".  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200509/20200509144510.jpg)  
+
+## How to play BMS with MPG in the background  
+MP4 is supported in this game, but MPG is not.  
+So, you need to convert mpg to mp4.  
+After converting to mp4, you need to modify the #BMP "filename" part in the bms/bme/bml file.  
+  
+![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200510/20200510095659.png)
   
 
-# History
+## History
 - 20200510 : MP4 is now supported.
 - 20200509_2 : Bug fix : Fixed moving records bug.(There was something wrong with the way the records were arranged.)
 - 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation.

@@ -69,6 +69,10 @@ public class MusicPlay : MonoBehaviour
                 if (i == 4) {
                     processImagePart(i, frame_no);
                 }
+                //07の画像変更の際だけど、動画のみ対応
+                if (i == 7) {
+                    porcessImageSevenPart(i, frame_no);
+                }
 
                 //BPM変更の際
                 if (i == 3) {
@@ -93,6 +97,16 @@ public class MusicPlay : MonoBehaviour
         );
         BpmChangeObject b = bpmChangeObject.GetComponent<BpmChangeObject>();
         b.setBpmRate(bpmRate); 
+    }
+
+    //07が来て、かつ動画だったら
+    private void porcessImageSevenPart(int key_no, int frame_no) {
+        string imageName = list_music_data[key_no, frame_no];
+        //動画だったら
+        if (dictMovie.ContainsKey(imageName)) {
+            playVideo();
+            return;
+        }
     }
 
     //画像が来たときの処理
