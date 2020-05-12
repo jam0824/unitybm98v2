@@ -8,6 +8,8 @@ public class MusicObject : MonoBehaviour
     private MusicPlayManager m;
     private MusicPlayData musicPlayData;
     private MusicPlayPower musicPlayPower;
+    private CalcFps calcFps;
+
     private float GOOD_LINE;
     private float GREAT_LINE;
     private float MIN_FPS = 65.0f;
@@ -18,6 +20,9 @@ public class MusicObject : MonoBehaviour
     private bool isSound = false;
     private bool isAutoPlay = false;
     private float DEAD_LINE = -5.0f;
+    private float TARGET_FPS = 65.0f;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +30,7 @@ public class MusicObject : MonoBehaviour
 
         musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
         musicPlayPower = mainObject.GetComponent<MusicPlayPower>();
+        calcFps = GameObject.Find("FpsObject").GetComponent<CalcFps>();
         m = mainObject.GetComponent<MusicPlayManager>();
 
         v = m.getMusicObjVec();
@@ -75,7 +81,8 @@ public class MusicObject : MonoBehaviour
         {
             transparentObject(this.gameObject);
             judge(other.gameObject.tag);
-            hit();
+            //既定FPS以上出ているのならhitスパークを表示させる
+            if(calcFps.getFPS() >= TARGET_FPS)hit();
             sound();
             isSound = true;
         }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityBm98Utilities;
 using UnityBm98Config;
+using UnityBm98Utilities;
 using FileController;
 using System.IO;
 
@@ -56,6 +56,7 @@ public class MusicPlayManager : MonoBehaviour
 
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
     private int folderCount = 0; //選択した曲番号
+    private string category = ""; //引継ぎ用のカテゴリーラベル保持
 
     //別のシーンから呼ばれた時に入れる
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
@@ -85,6 +86,9 @@ public class MusicPlayManager : MonoBehaviour
     public void setMusicFolder(string music_folder) {
         this.music_folder = music_folder;
     }
+    public void setMusicCategoryFolderPath(string folderPath) {
+        this.MUSIC_FOLDER_PATH = folderPath;
+    }
     public void setMusic_bms(string music_bms) {
         this.music_bms = music_bms;
     }
@@ -107,6 +111,7 @@ public class MusicPlayManager : MonoBehaviour
         this.folderCount = folderCount;
     }
     
+    
 
     public int PlayKeyNum {
         set { this.playKeyNum = value; }
@@ -115,6 +120,10 @@ public class MusicPlayManager : MonoBehaviour
     public float TotalCalorie {
         get { return this.totalCalorie; }
         set { this.totalCalorie = value; }
+    }
+    public string Category {
+        set { this.category = value; }
+        get { return this.category; }
     }
 
 
@@ -131,7 +140,7 @@ public class MusicPlayManager : MonoBehaviour
         musicPlayPower = this.GetComponent<MusicPlayPower>();
         musicPlayData = this.GetComponent<MusicPlayData>();
         animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
-        MUSIC_FOLDER_PATH = config.getFolderPath();
+        //MUSIC_FOLDER_PATH = config.getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
         setMusicData(dictMusicData);
         frameCount = 0;
@@ -271,6 +280,8 @@ public class MusicPlayManager : MonoBehaviour
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(totalCalorie);
         musicSelectManager.setFolderCount(this.folderCount);
+        musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
+        musicSelectManager.setCategory(this.category);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 

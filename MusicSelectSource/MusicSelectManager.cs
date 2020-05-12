@@ -44,6 +44,8 @@ public class MusicSelectManager : MonoBehaviour
     private float totalCalorie = 0;
     private int oldFolderCount = -1;
 
+    private string category = "None";
+
     public Dictionary<string, string> getDictMusicData() {
         return listMusicDict[folderCount];
     }
@@ -57,31 +59,34 @@ public class MusicSelectManager : MonoBehaviour
         this.showRecordMidNum = folderCount;
     }
 
+    public void setMusicFolderPath(string folderPath) {
+        this.MUSIC_FOLDER_PATH = folderPath;
+    }
+
+    public void setCategory(string category) {
+        this.category = category;
+    }
+
     void Start()
     {
         bool isOk = false;
-        MUSIC_FOLDER_PATH = config.getFolderPath();
+        if (MUSIC_FOLDER_PATH == null)
+            MUSIC_FOLDER_PATH = config.getFolderPath();
         musicSelect = this.GetComponent<MusicSelect>();
         musicSelectSaveFileLoader = this.GetComponent<MusicSelectSaveFileLoader>();
-        listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
+        //全描画
+        isOk = allRedraw(MUSIC_FOLDER_PATH);
 
-        //フォルダがなかったら処理終わり
-        if (!fileController.isFolderExist(MUSIC_FOLDER_PATH)) {
-            makeZeroObject();
-            return;
-        }
-        //レコード作成。レコードがあればtrue
-        isOk = recordInit();
-        if (!isOk) makeZeroObject();
-
-        //トータルカロリー表示
-        showTotalCalorie(this.totalCalorie);
+        //カテゴリーの描画
+        redrawCategoryLabel(this.category);
 
         //スタートフラグtrue
         isReady = isOk;
 
         //画面表示前にSEが表示されてしまうので、コールチンで遅らせて再生
         StartCoroutine(startSeDelayMethod(2.0f, SE_START));
+
+        Bm98Debug.Instance.Log(MUSIC_FOLDER_PATH);
     }
 
     //持ってる曲がない、フォルダがないときは説明用オブジェクトを表示
@@ -89,12 +94,44 @@ public class MusicSelectManager : MonoBehaviour
         GameObject obj = Instantiate(ZERO_OBJECT) as GameObject;
     }
 
+    //各種メンバー変数初期化
+    private void valueInit() {
+        folderCount = 0;
+        localRecordCount = -1;
+        showRecordMidNum = 0;
+        oldFolderCount = -1;
+        SHOW_RECOED_NUM = 30;
+        listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
+    }
+
+    public bool allRedraw(string folderPath) {
+        bool isOk = false;
+        
+
+        //もしレコードオブジェクトがあるなら全部消す
+        deleteAllRecords();
+        valueInit();
+
+        //フォルダがなかったら処理終わり
+        if (!fileController.isFolderExist(folderPath)) {
+            makeZeroObject();
+            return isOk;
+        }
+        //レコード作成。レコードがあればtrue
+        isOk = recordInit(folderPath);
+        if (!isOk) makeZeroObject();
+
+        //トータルカロリー表示
+        showTotalCalorie(this.totalCalorie);
+        return isOk;
+    }
+
     //セーブデータ、bmsデータを読み込んでレコードオブジェクト作成まで
-    bool recordInit() {
+    bool recordInit(string folderPath) {
         //セーブファイルをロード
         listSaveData = musicSelectSaveFileLoader.loadSaveData();
         //BMSのリストを作る
-        listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(MUSIC_FOLDER_PATH);
+        listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(folderPath);
 
         if(listMusicDict.Count == 0) {
             return false;
@@ -117,6 +154,8 @@ public class MusicSelectManager : MonoBehaviour
         return true;
     }
 
+    
+
 
     //各種入力チェック
     void Update()
@@ -130,7 +169,14 @@ public class MusicSelectManager : MonoBehaviour
                 showScore();
                 oldFolderCount = folderCount;
             }
+            //曲の決定
+            if ((Input.GetKeyUp(KeyCode.Space)) ||
+                (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))) {
+                musicSelect.showInfomation(listMusicDict[folderCount]);
+                selectedMusic();
+            }
 
+            //曲の移動
             if ((Input.GetKeyUp(KeyCode.RightArrow)) ||
                 (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstickRight))) {
                 musicSelect.nextMusic();
@@ -141,11 +187,7 @@ public class MusicSelectManager : MonoBehaviour
                 musicSelect.prevMusic();
                 musicSelect.showInfomation(listMusicDict[folderCount]);
             }
-            if ((Input.GetKeyUp(KeyCode.Space)) ||
-                (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))) {
-                musicSelect.showInfomation(listMusicDict[folderCount]);
-                selectedMusic();
-            }
+            
             if (Input.GetKey(KeyCode.RightArrow)) {
                 moveRecords(0.2f, MIN_SHOE_RECORD_X, MAX_SHOE_RECORD_X);
             }
@@ -246,15 +288,17 @@ public class MusicSelectManager : MonoBehaviour
 
     //曲の決定
     public void selectedMusic() {
-        playSe(SE_DECIDE);
-        GameObject.Find("CenterEyeAnchor").GetComponent<OVRScreenFade>().FadeOut();
-        StartCoroutine(DelayMethod(2.0f));
+        if (isReady) {
+            isReady = false;
+            playSe(SE_DECIDE);
+            GameObject.Find("CenterEyeAnchor").GetComponent<OVRScreenFade>().FadeOut();
+            StartCoroutine(DelayMethod(2.0f));
+        }
     }
     private IEnumerator DelayMethod(float waitTime) {
         yield return new WaitForSeconds(waitTime);
         startChangeScene();
     }
-
     //シーン切り替え
     private void startChangeScene() {
         // イベントに登録
@@ -265,9 +309,11 @@ public class MusicSelectManager : MonoBehaviour
     private void GameSceneLoaded(Scene next, LoadSceneMode mode) {
         // シーン切り替え後のスクリプトを取得
         MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
+        musicPlayManager.setMusicCategoryFolderPath(this.MUSIC_FOLDER_PATH);
         musicPlayManager.setDictMusicData(listMusicDict[folderCount]);
         musicPlayManager.TotalCalorie = this.totalCalorie;
         musicPlayManager.setFolderCount(this.folderCount);
+        musicPlayManager.Category = this.category;
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
@@ -303,6 +349,15 @@ public class MusicSelectManager : MonoBehaviour
         rd.showInfomation();
         obj.transform.position = pos;
         return obj;
+    }
+
+    //レコードを全部消す（カテゴリー切り替え用)
+    private void deleteAllRecords() {
+        if ((this.listRecordObject == null) || (this.listRecordObject.Count == 0)) return;
+        foreach (GameObject record in this.listRecordObject) {
+            Destroy(record.gameObject);
+        }
+
     }
 
     //SE再生
@@ -346,6 +401,30 @@ public class MusicSelectManager : MonoBehaviour
     }
 
 
+    //ジャンル変更後の再読み込み
+    public void returnMusicSelectScene() {
+        // シーン切り替え
+        GameObject.Find("CenterEyeAnchor").GetComponent<OVRScreenFade>().FadeOut();
+        StartCoroutine(reloadDelayMethod(2.0f));
+    }
+    private void GameSceneReloaded(Scene next, LoadSceneMode mode) {
+        // シーン切り替え後のスクリプトを取得
+        MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
+        musicSelectManager.setTotalCalorie(this.totalCalorie);
+        musicSelectManager.setFolderCount(this.folderCount);
+        musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
+        musicSelectManager.setCategory(this.category);
+        SceneManager.sceneLoaded -= GameSceneReloaded;
+    }
+    private IEnumerator reloadDelayMethod(float waitTime) {
+        yield return new WaitForSeconds(waitTime);
+        SceneManager.sceneLoaded += GameSceneReloaded;
+        SceneManager.LoadScene("MusicSelectScene");
+    }
+
+    private void redrawCategoryLabel(string category) {
+        GameObject.Find("CategoryLabelText").GetComponent<Text>().text = "Category : " + category;
+    }
 
 
 }

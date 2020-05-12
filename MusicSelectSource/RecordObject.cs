@@ -96,4 +96,18 @@ public class RecordObject : MonoBehaviour
         return level;
     }
 
+    //クリックされた時の動作
+    public void clickRecord() {
+        if(musicSelectManager.folderCount != int.Parse(dictMusicData["music_count"])) {
+            Bm98Debug.Instance.Log(dictMusicData["music_count"] + " : " + dictMusicData["#TITLE"]);
+            musicSelectManager.folderCount = int.Parse(dictMusicData["music_count"]);
+            musicSelectManager.localRecordCount = this.localRecordCount;
+            playSe();
+        }
+        else {
+            musicSelectManager.selectedMusic();
+        }
+        
+    }
+
 }

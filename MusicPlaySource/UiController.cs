@@ -7,6 +7,7 @@ public class UiController : MonoBehaviour
 {
     private MusicPlayManager musicPlayManager;
     private MusicPlayData musicPlayData;
+    private CalcFps calcFps;
     private Text calorieText;
     private Text metsText;
     private Text scoreText;
@@ -25,6 +26,7 @@ public class UiController : MonoBehaviour
     private void init() {
         musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayData = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayData>();
+        calcFps = GameObject.Find("FpsObject").GetComponent<CalcFps>();
         calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
         metsText = GameObject.Find("METsArea").GetComponent<Text>();
         scoreText = GameObject.Find("ScoreArea").GetComponent<Text>();
