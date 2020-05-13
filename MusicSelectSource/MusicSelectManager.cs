@@ -13,7 +13,7 @@ public class MusicSelectManager : MonoBehaviour
 {
     public GameObject RECORD_OBJECT;
     public GameObject ZERO_OBJECT;
-    public int folderCount = 0;
+    
     public int localRecordCount = -1; //現在表示されているレコードオブジェクトの番号。サークルを出すときに使う。
     public List<Dictionary<string, string>> listMusicDict;
     public bool isReady = false;
@@ -21,6 +21,8 @@ public class MusicSelectManager : MonoBehaviour
     public AudioClip SE_START;
     public AudioClip SE_DECIDE;
     public AudioClip SE_MOVE;
+
+    private int folderCount = 0; //全体の曲ナンバーを示す最も大事な数字
 
     private BmsInformationLoader bmsInformationLoader;
     private MusicSelect musicSelect;
@@ -58,6 +60,9 @@ public class MusicSelectManager : MonoBehaviour
         this.folderCount = folderCount;
         this.showRecordMidNum = folderCount;
     }
+    public int getFolderCount() {
+        return this.folderCount;
+    }
 
     public void setMusicFolderPath(string folderPath) {
         this.MUSIC_FOLDER_PATH = folderPath;
@@ -87,6 +92,7 @@ public class MusicSelectManager : MonoBehaviour
         StartCoroutine(startSeDelayMethod(2.0f, SE_START));
 
         Bm98Debug.Instance.Log(MUSIC_FOLDER_PATH);
+        Bm98Debug.Instance.Log("folderCount = " + this.folderCount.ToString());
     }
 
     //持ってる曲がない、フォルダがないときは説明用オブジェクトを表示
@@ -96,9 +102,7 @@ public class MusicSelectManager : MonoBehaviour
 
     //各種メンバー変数初期化
     private void valueInit() {
-        folderCount = 0;
         localRecordCount = -1;
-        showRecordMidNum = 0;
         oldFolderCount = -1;
         SHOW_RECOED_NUM = 30;
         listShowRecordFolderCount = new int[SHOW_RECOED_NUM];
@@ -411,7 +415,7 @@ public class MusicSelectManager : MonoBehaviour
         // シーン切り替え後のスクリプトを取得
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(this.totalCalorie);
-        musicSelectManager.setFolderCount(this.folderCount);
+        musicSelectManager.setFolderCount(0);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
         SceneManager.sceneLoaded -= GameSceneReloaded;

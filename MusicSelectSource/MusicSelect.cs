@@ -44,9 +44,11 @@ public class MusicSelect : MonoBehaviour
     public void nextMusic() {
         if (moveCount > 0) return;
         initMoveMusic();
-        musicSelectManager.folderCount++;
-        if (musicSelectManager.folderCount >= musicSelectManager.listMusicDict.Count)
-            musicSelectManager.folderCount = 0;
+        musicSelectManager.setFolderCount(
+            musicSelectManager.getFolderCount() + 1
+        );
+        if (musicSelectManager.getFolderCount() >= musicSelectManager.listMusicDict.Count)
+            musicSelectManager.setFolderCount(0);
         changeArrow("allow_right_blue");
         showInfomation(musicSelectManager.getDictMusicData());
         this.isRightAnim = true;
@@ -57,9 +59,11 @@ public class MusicSelect : MonoBehaviour
     public void prevMusic() {
         if (moveCount > 0) return;
         initMoveMusic();
-        musicSelectManager.folderCount--;
-        if (musicSelectManager.folderCount < 0)
-            musicSelectManager.folderCount = musicSelectManager.listMusicDict.Count - 1;
+        musicSelectManager.setFolderCount(
+            musicSelectManager.getFolderCount() - 1
+        );
+        if (musicSelectManager.getFolderCount() < 0)
+            musicSelectManager.setFolderCount(musicSelectManager.listMusicDict.Count - 1);
         changeArrow("allow_left_blue");
         showInfomation(musicSelectManager.getDictMusicData());
         this.isRightAnim = false;
@@ -122,7 +126,7 @@ public class MusicSelect : MonoBehaviour
             listStars = showStar(dificurity);
         }
         GameObject.Find("MusicCountArea").GetComponent<Text>().text = 
-            (musicSelectManager.folderCount + 1) + "/" + musicSelectManager.listMusicDict.Count;
+            (musicSelectManager.getFolderCount() + 1) + "/" + musicSelectManager.listMusicDict.Count;
         //Bm98Debug.Instance.Log("select : " + musicTitleText.text);  
     }
 

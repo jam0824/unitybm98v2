@@ -208,7 +208,7 @@ public class MusicPlay : MonoBehaviour
             musicPlayManager.MUSIC_OBJ_SIZE,
             musicPlayManager.MUSIC_OBJ_SIZE
         );
-        if(key_no != 1) musicPlayData.addTotalNotesNum();
+        setPosition(musicObject, key_no);
         try {
             if (!dict_audio.ContainsKey(wav_name)) {
                 Debug.Log("#WAV" + wav_name + "に該当する音がありませんでした");
@@ -216,7 +216,6 @@ public class MusicPlay : MonoBehaviour
             }
             AudioSource audioSource = musicObject.GetComponent<AudioSource>();
             audioSource.clip = dict_audio[wav_name];
-            setPosition(musicObject, key_no);
         }
         catch (Exception e) {
             Debug.Log(e);

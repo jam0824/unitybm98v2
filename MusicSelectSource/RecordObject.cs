@@ -65,7 +65,7 @@ public class RecordObject : MonoBehaviour
         if (ovrGrabbable.isGrabbed) {
             if (!this.isGrabbled) {
                 Bm98Debug.Instance.Log(dictMusicData["music_count"] + " : " + dictMusicData["#TITLE"]);
-                musicSelectManager.folderCount = int.Parse(dictMusicData["music_count"]);
+                musicSelectManager.setFolderCount(int.Parse(dictMusicData["music_count"]));
                 musicSelectManager.localRecordCount = this.localRecordCount;
                 playSe();
                 this.isGrabbled = true;
@@ -98,9 +98,9 @@ public class RecordObject : MonoBehaviour
 
     //クリックされた時の動作
     public void clickRecord() {
-        if(musicSelectManager.folderCount != int.Parse(dictMusicData["music_count"])) {
+        if(musicSelectManager.getFolderCount() != int.Parse(dictMusicData["music_count"])) {
             Bm98Debug.Instance.Log(dictMusicData["music_count"] + " : " + dictMusicData["#TITLE"]);
-            musicSelectManager.folderCount = int.Parse(dictMusicData["music_count"]);
+            musicSelectManager.setFolderCount(int.Parse(dictMusicData["music_count"]));
             musicSelectManager.localRecordCount = this.localRecordCount;
             playSe();
         }

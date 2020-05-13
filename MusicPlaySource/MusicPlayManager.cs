@@ -195,8 +195,10 @@ public class MusicPlayManager : MonoBehaviour
         //5 or 7 keyかを取得
         this.playKeyNum = bmsConverter.PlayKeyNum;
 
+        //パワーの計算
+        Debug.Log("maxnotes : " + musicPlayData.getTotalNotesNum());
         Debug.Log("最終フレーム : " + bmsConverter.LastFrameNo);
-
+        musicPlayPower.calcPower();
         isUpdate = true;
     }
 

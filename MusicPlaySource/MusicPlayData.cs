@@ -50,6 +50,9 @@ public class MusicPlayData : MonoBehaviour
     public int getTotalNotesNum() {
         return this.totalNotesNum;
     }
+    public void setTotalNotesNum(int num) {
+        this.totalNotesNum = num;
+    }
     public void addTotalNotesNum() {
         totalNotesNum++;
     }

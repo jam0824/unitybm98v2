@@ -13,6 +13,7 @@ public class BmsConverter : MonoBehaviour
 {
     public Dictionary<string, string> dictMovie;
     private MusicPlayManager musicPlayManager;
+    private MusicPlayData musicPlayData;
     private int playKeyNum = 5;
 
     Dictionary<string, string> dicChangeChars;
@@ -38,6 +39,7 @@ public class BmsConverter : MonoBehaviour
     void Start()
     {
         musicPlayManager = this.GetComponent<MusicPlayManager>();
+        musicPlayData = this.GetComponent<MusicPlayData>();
         dictMovie = new Dictionary<string, string>();
         dicChangeChars = getDicChangeChars();
     }
@@ -77,8 +79,10 @@ public class BmsConverter : MonoBehaviour
         string extention = getAudioExtention(music_folder);
 
         foreach (string line in list_string) {
-            if (line.Contains("#WAV")) {
+            //この段階で大文字小文字変換をかけるとファイル名まで変換されてしまうので注意
+            if ((line.Contains("#WAV")) || (line.Contains("#wav"))) {
                 string tmp = line.Replace("#WAV", "");
+                tmp = tmp.Replace("#wav", "");
                 int index = tmp.IndexOf(" ");
                 string key = tmp.Substring(0, index);
                 string value = tmp.Substring(index + 1);
@@ -133,8 +137,10 @@ public class BmsConverter : MonoBehaviour
     public Dictionary<string, Sprite> readImageFiles(string[] list_string, string music_folder) {
         Dictionary<string, Sprite> dict_image = new Dictionary<string, Sprite>();
         foreach (string line in list_string) {
-            if (line.Contains("#BMP")) {
+            //この段階で大文字小文字変換をかけるとファイル名まで変換されてしまうので注意
+            if ((line.Contains("#BMP")) || (line.Contains("#bmp"))) {
                 string tmp = line.Replace("#BMP", "");
+                tmp = tmp.Replace("#bmp", "");
                 string[] command = tmp.Split(' ');
                 if (fileController.isFileExist(music_folder + "/" + command[1])) {
                     //読み込めない動画だった場合は何もしない
@@ -225,9 +231,6 @@ public class BmsConverter : MonoBehaviour
                 int syousetsu_no = int.Parse(command[0].Substring(0, 3));
                 int key_no = int.Parse(command[0].Substring(3, 2));
 
-                //キー数の判定もしておく
-                judgeKeyNum(key_no);
-
                 //処理しなくていいkey_noのときは戻す
                 if (key_no == 2) {
                     continue;
@@ -236,6 +239,9 @@ public class BmsConverter : MonoBehaviour
                 if((key_no >= 20) && (key_no <= 69)) {
                     key_no = 1;
                 }
+
+                //キー数の判定もしておく
+                judgeKeyNum(key_no);
 
                 //該当小節1つの所要フレーム数を求める
                 float how_long_syousetsu = (60.0f * 4.0f * frame / BPM) * this.listSyousetsuRate[syousetsu_no];
@@ -255,6 +261,8 @@ public class BmsConverter : MonoBehaviour
                         else {
                             list_music_data[key_no, key_frame] += "," + wav;
                         }
+                        //トータルノーツ数を数える
+                        countTotalNotes(key_no);
 
                     }
                 }
@@ -267,6 +275,11 @@ public class BmsConverter : MonoBehaviour
         //最終フレーム取得
         this.LastFrameNo = getLastFrame(list_music_data);
         return list_music_data;
+    }
+
+    private void countTotalNotes(int key_no) {
+        if ((key_no > 10) && (key_no < musicPlayManager.AUTO_KEY_NO))
+            musicPlayData.addTotalNotesNum();
     }
 
     //プレイキー数取得

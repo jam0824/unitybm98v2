@@ -16,10 +16,10 @@ public class MusicPlayPower : MonoBehaviour
     private float lineYellow = 0.25f;
     private float lineRed = 0.125f;
 
-    private float excellent = 2.0f;
-    private float great = 1.0f;
-    private float good = 0.5f;
-    private float poor = -10.0f;
+    private float excellent = 1.0f;
+    private float great = 0.5f;
+    private float good = 0.2f;
+    private float poor = -20.0f;
 
     private string status = "blue";
 
@@ -29,6 +29,13 @@ public class MusicPlayPower : MonoBehaviour
     {
         powerBar = GameObject.Find("PowerBar");
         showLifeBar();
+    }
+
+    public void calcPower() {
+        int totalNotes = this.GetComponent<MusicPlayData>().getTotalNotesNum();
+        this.excellent = (maxPower * 2.0f) / (float)totalNotes;
+        this.great = excellent / 2.0f;
+        this.good = great / 2.0f;
     }
 
     // Update is called once per frame

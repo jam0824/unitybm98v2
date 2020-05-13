@@ -57,7 +57,7 @@ public class MusicSelectCategory : MonoBehaviour
     private void updateListView(GameObject categoryItem, List<string> listCategory) {
         float itemHeight = getItemHeight(categoryItem);
         int settingCount = listCategory.Count;
-        float newHeight = settingCount * itemHeight;
+        float newHeight = (settingCount + 1) * itemHeight;
         content_.sizeDelta = new Vector2(content_.sizeDelta.x, newHeight);
 
 
