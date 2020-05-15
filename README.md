@@ -26,16 +26,26 @@ You can play the game with those files.
 ## Youtube
 You can check this game at youtube.  
 
-[![](https://img.youtube.com/vi/Zovg2ggOd-o/0.jpg)](https://www.youtube.com/watch?v=Zovg2ggOd-o)
+[![](https://img.youtube.com/vi/QlTms1lmWTw/0.jpg)](https://www.youtube.com/watch?v=QlTms1lmWTw)
 
-
+* * *  
+  
+## Contents  
+- [Installation](#Installation)  
+- [How to play](#How-to-play)
+- [How to create music categories](#How-to-create-music-categories)
+- [How to play BMS with MPG in the background](#How-to-play-BMS-with-MPG-in-the-background)
+- [History](#History)
+  
+* * *
+  
 ## Installation  
-1. **Please create "bmsfitness" folder under the internal storage of Oculus Quest.**  
+**1. Please create "bmsfitness" folder under the internal storage of Oculus Quest.**  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211600.png)  
   
   
 
-2. **Put folders of BMS in "bmsfitness" folder.**
+**2. Put folders of BMS in "bmsfitness" folder.**
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504211651.png)  
 
 Songs can be found by googling "bms TITLE" and so on.  
@@ -45,29 +55,63 @@ For example, I like these songs.
 
   
 
-3. **Please install "bmsfitness.apk", you can find out how to install apk at the following site for example.**  
+**3. Please install "bmsfitness.apk", you can find out how to install apk at the following site for example.**  
 <https://www.androidcentral.com/how-sideload-apps-oculus-quest>  
 
 4. **You can play this game at "Library -> Unknown Sources -> BMSFitness".** 
+  
 
+* * *
+  
 
 ## How to play
-1. You can move records with the right stick.  
+**1. You can move records with the right stick.**  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504212801.jpg)  
   
   
 
-2. You can choose the music by picking up a record.  
+**2. You can choose the music by picking up a record.**  
 Push A button to start the music.  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200504/20200504212839.jpg)
   
 
 
-3. If you want to return to the music selection screen during the game, you can do so by pressing B button.
+**3. If you want to return to the music selection screen during the game, you can do so by pressing B button.**
 
-4. If you hit the ball with your alternate hand, it will be "Excellent". This is 10 times the score of "Great".  
+**4. If you hit the ball with your alternate hand, it will be "Excellent". This is 10 times the score of "Great".**
+
+
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200509/20200509144510.jpg)  
+  
 
+* * *
+  
+## How to create music categories
+If you have a lot of songs, it will take a while to find the one you want to play.  
+So I added a "Category" feature.    
+This function allows you to manage songs in categories such as Anime and Game.  
+
+**1. Create a "categories" folder in the "bmsfitness" folder.**  
+  
+![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516082723.png)  
+  
+
+**2. In the "categories" folder, create a folder for categories such as "Anime" and "Game". You can make it with any name you like.**   
+  
+![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516082844.png)  
+  
+
+**3. While in the game, aim the laser at the area marked "Category : None" on the screen and press the trigger on the right controller.**  
+  
+![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516083012.png)  
+  
+
+**4. A list of categories will appear, from which you can select a category. When "None" is selected, the song directly under the "bmsfitness" folder will be displayed.**  
+  
+![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516083112.jpg)
+  
+* * *
+  
 ## How to play BMS with MPG in the background  
 MP4 is supported in this game, but MPG is not.  
 So, you need to convert mpg to mp4.  
@@ -77,6 +121,7 @@ After converting to mp4, you need to modify the #BMP "filename" part in the bms/
   
 
 ## History
+- 20200516 : Added category function, added rank function, fixed a bug where MusicBall slips through, fixed a bug where MusicBall flies to another place, set the recovery rate of power low.
 - 20200510 : MP4 is now supported.
 - 20200509_2 : Bug fix : Fixed moving records bug.(There was something wrong with the way the records were arranged.)
 - 20200509 : Added "Excellent", Saving high score, Fixed moving records, Changeing METs(2 panch/sec -> 3 panch/sec), ZERO explanation.
