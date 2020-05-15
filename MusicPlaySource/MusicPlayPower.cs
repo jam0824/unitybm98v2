@@ -33,7 +33,7 @@ public class MusicPlayPower : MonoBehaviour
 
     public void calcPower() {
         int totalNotes = this.GetComponent<MusicPlayData>().getTotalNotesNum();
-        this.excellent = (maxPower * 2.0f) / (float)totalNotes;
+        this.excellent = (maxPower * 1.5f) / (float)totalNotes;
         this.great = excellent / 2.0f;
         this.good = great / 2.0f;
     }

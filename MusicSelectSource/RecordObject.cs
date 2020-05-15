@@ -7,6 +7,10 @@ public class RecordObject : MonoBehaviour
 {
     public bool isGrabbled = false;
     public AudioClip AUDIO_DECIDE;
+    public Sprite TITLE_CLEARED;
+    public Sprite TITLE_NOT_CLEAR;
+    public Sprite RANK_TRANCE;
+    public List<Sprite> RankImage;
     private Dictionary<string, string> dictMusicData;
     private MusicSelectManager musicSelectManager;
     private OVRGrabbable ovrGrabbable;
@@ -56,6 +60,12 @@ public class RecordObject : MonoBehaviour
                 case "MusicNoText":
                     t.gameObject.GetComponent<Text>().text = "No." + dictMusicData["music_count"];
                     break;
+                case "RecordTitleImage":
+                    changeTitleColor(t, dictMusicData["HighScore"]);
+                    break;
+                case "RankImage":
+                    changeRankImage(t, dictMusicData["Rank"]);
+                    break;
             }
         }
     }
@@ -73,6 +83,42 @@ public class RecordObject : MonoBehaviour
         }
         else {
             this.isGrabbled = false;
+        }
+    }
+
+    private void changeRankImage(Transform t, string rank) {
+        if(rank == "") {
+            t.gameObject.GetComponent<Image>().sprite = RANK_TRANCE;
+            return;
+        }
+        switch (rank) {
+            case "S":
+                t.gameObject.GetComponent<Image>().sprite = RankImage[0];
+                break;
+            case "A":
+                t.gameObject.GetComponent<Image>().sprite = RankImage[1];
+                break;
+            case "B":
+                t.gameObject.GetComponent<Image>().sprite = RankImage[2];
+                break;
+            case "C":
+                t.gameObject.GetComponent<Image>().sprite = RankImage[3];
+                break;
+            case "D":
+                t.gameObject.GetComponent<Image>().sprite = RankImage[4];
+                break;
+        }
+
+    }
+
+    //タイトルの色を変える
+    private void changeTitleColor(Transform t, string score) {
+        if (score == "") {
+            t.gameObject.GetComponent<Image>().sprite = TITLE_NOT_CLEAR;
+        }
+        else {
+            //ハイスコアが入っていたらクリアしてるのでタイトル色を変える
+            t.gameObject.GetComponent<Image>().sprite = TITLE_CLEARED;
         }
     }
 

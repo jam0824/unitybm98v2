@@ -76,16 +76,27 @@ public class MusicObject : MonoBehaviour
 
     //hit tagのオブジェクトとぶつかったら音を鳴らしてヒットマークを出す
     void OnTriggerEnter(Collider other) {
+        if (((other.gameObject.tag == "leftHand") || (other.gameObject.tag == "rightHand")) &&
+            (!isSound)) {
+            hitObject(other);
+        }
+    }
+    //stay時も判定はかける
+    void OnTriggerStay(Collider other) {
         if (((other.gameObject.tag == "leftHand") || (other.gameObject.tag == "rightHand") ) && 
             (!isSound)) 
         {
-            transparentObject(this.gameObject);
-            judge(other.gameObject.tag);
-            //既定FPS以上出ているのならhitスパークを表示させる
-            if(calcFps.getFPS() >= TARGET_FPS)hit();
-            sound();
-            isSound = true;
+            hitObject(other);
         }
+    }
+
+    void hitObject(Collider other) {
+        transparentObject(this.gameObject);
+        judge(other.gameObject.tag);
+        //既定FPS以上出ているのならhitスパークを表示させる
+        if (calcFps.getFPS() >= TARGET_FPS) hit();
+        sound();
+        isSound = true;
     }
 
     //オブジェクトをただ削除すると音も消えるので、縮小して消えたように見せる

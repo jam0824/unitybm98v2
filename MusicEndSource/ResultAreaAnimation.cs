@@ -18,6 +18,8 @@ public class ResultAreaAnimation : MonoBehaviour
     private int frameRate;
     private bool isAnimation = false;
 
+    public List<Sprite> rankSprite;
+
     //スコア表示のところの処理
     public void startResultAreaDraw() {
         resultArea = Instantiate(RESULT_AREA_OBJECT) as GameObject;
@@ -65,6 +67,9 @@ public class ResultAreaAnimation : MonoBehaviour
                 case 8:
                     drawCalorie(musicPlayData.getCalorie());
                     break;
+                case 9:
+                    drawRank();
+                    break;
             }
         }
     }
@@ -99,6 +104,28 @@ public class ResultAreaAnimation : MonoBehaviour
     }
     private void drawCalorie(float calorie) {
         GameObject.Find("CalorieNum").GetComponent<Text>().text = calorie.ToString("f1") + " kcal";
+        playSe(seCombo);
+    }
+    private void drawRank() {
+        string rank = musicPlayManager.getRank();
+
+        switch (rank) {
+            case "S":
+                GameObject.Find("RankImage").GetComponent<Image>().sprite = rankSprite[0];
+                break;
+            case "A":
+                GameObject.Find("RankImage").GetComponent<Image>().sprite = rankSprite[1];
+                break;
+            case "B":
+                GameObject.Find("RankImage").GetComponent<Image>().sprite = rankSprite[2];
+                break;
+            case "C":
+                GameObject.Find("RankImage").GetComponent<Image>().sprite = rankSprite[3];
+                break;
+            case "D":
+                GameObject.Find("RankImage").GetComponent<Image>().sprite = rankSprite[4];
+                break;
+        }
         playSe(seCalorie);
         GameObject obj = Instantiate(PRESS_BUTTON) as GameObject;
     }

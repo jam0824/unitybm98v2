@@ -175,6 +175,7 @@ public class BmsConverter : MonoBehaviour
         VideoPlayer videoPlayer = obj.GetComponent<VideoPlayer>();
         videoPlayer.playOnAwake = false;
         videoPlayer.url = url;
+        
     }
     
     //画像ファイルを外部から読み込む

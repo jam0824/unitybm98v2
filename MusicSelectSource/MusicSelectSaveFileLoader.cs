@@ -32,13 +32,13 @@ public class MusicSelectSaveFileLoader : MonoBehaviour
                 listMusicDict[i].Add("HighScore", returnData["HighScore"]);
                 listMusicDict[i].Add("MaxCombo", returnData["MaxCombo"]);
                 listMusicDict[i].Add("Calorie", returnData["Calorie"]);
-                //listMusicDict[i].Add("Rank", returnData["Rank"]);
+                listMusicDict[i].Add("Rank", returnData["Rank"]);
             }
             else {
                 listMusicDict[i].Add("HighScore", "");
                 listMusicDict[i].Add("MaxCombo", "");
                 listMusicDict[i].Add("Calorie", "");
-                //listMusicDict[i].Add("Rank", "");
+                listMusicDict[i].Add("Rank", "");
             }
         }
         return listMusicDict;

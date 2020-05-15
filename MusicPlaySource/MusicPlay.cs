@@ -125,6 +125,8 @@ public class MusicPlay : MonoBehaviour
         //画像がない場合
         if (!dict_image.ContainsKey(imageName)) {
             Debug.Log("#BMP" + imageName + "に該当する画像がありませんでした");
+            changeBlackScreen(screenLeft);
+            changeBlackScreen(screenRight);
             return;
         }
         changeScreen(screenLeft, imageName);
@@ -138,6 +140,10 @@ public class MusicPlay : MonoBehaviour
         catch (Exception e) {
             Debug.Log(e);
         }
+    }
+    private void changeBlackScreen(GameObject obj) {
+        SpriteRenderer s = obj.GetComponent<SpriteRenderer>();
+        s.sprite = musicPlayManager.BLACK_BMP;
     }
     //動画再生オブジェクトを投げる
     private void playVideo() {

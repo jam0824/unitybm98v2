@@ -20,6 +20,7 @@ public class MusicPlayManager : MonoBehaviour
     [SerializeField] public GameObject bgmObj;
     [SerializeField] public GameObject bpmChangeObj;
     [SerializeField] public GameObject movieObj;
+    [SerializeField] public Sprite BLACK_BMP;
     [SerializeField] public float MUSIC_WIDTH; //弾が飛んでくる範囲
     [SerializeField] public float GOOD_LINE; //GOOD判定の距離（絶対値）
     [SerializeField] public float GREAT_LINE; //GREAT判定の距離（絶対値）
@@ -310,7 +311,7 @@ public class MusicPlayManager : MonoBehaviour
                         listData[i]["MaxCombo"] = musicPlayData.MaxCombo.ToString();
                     if (musicPlayData.getCalorie() > float.Parse(listData[i]["Calorie"]))
                         listData[i]["Calorie"] = musicPlayData.getCalorie().ToString("f1");
-                    listData[i]["Rank"] = "A";
+                    listData[i]["Rank"] = getRank();
                     isExist = true;
                     break;
                 }
@@ -331,7 +332,27 @@ public class MusicPlayManager : MonoBehaviour
         saveData.Add("HighScore", musicPlayData.HighScore.ToString());
         saveData.Add("MaxCombo", musicPlayData.MaxCombo.ToString());
         saveData.Add("Calorie", musicPlayData.getCalorie().ToString("f1"));
-        saveData.Add("Rank", "A");
+        saveData.Add("Rank", getRank());
         return saveData;
+    }
+
+    public string getRank() {
+        float poorPer = (float)musicPlayData.getPoorNum() / (float)musicPlayData.getTotalNotesNum();
+        float exPer = (float)musicPlayData.getExcellentNum() / (float)musicPlayData.getTotalNotesNum();
+        if ((musicPlayData.getPoorNum() == 0) && (exPer > 0.8f)) {
+            return "S";   
+        }
+        else if (poorPer < 0.005f) {
+            return "A";
+        }
+        else if (poorPer < 0.01f) {
+            return "B";
+        }
+        else if (poorPer < 0.05f) {
+            return "C";
+        }
+        else {
+            return "D";
+        }
     }
 }
