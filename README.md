@@ -99,6 +99,7 @@ This function allows you to manage songs in categories such as Anime and Game.
 **2. In the "categories" folder, create a folder for categories such as "Anime" and "Game". You can make it with any name you like.**   
   
 ![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516082844.png)  
+![](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200516/20200516090153.png)  
   
 
 **3. While in the game, aim the laser at the area marked "Category : None" on the screen and press the trigger on the right controller.**  
