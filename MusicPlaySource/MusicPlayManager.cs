@@ -339,7 +339,7 @@ public class MusicPlayManager : MonoBehaviour
     public string getRank() {
         float poorPer = (float)musicPlayData.getPoorNum() / (float)musicPlayData.getTotalNotesNum();
         float exPer = (float)musicPlayData.getExcellentNum() / (float)musicPlayData.getTotalNotesNum();
-        if ((musicPlayData.getPoorNum() == 0) && (exPer > 0.8f)) {
+        if ((musicPlayData.getPoorNum() == 0) && (exPer > 0.6f)) {
             return "S";   
         }
         else if (poorPer < 0.005f) {

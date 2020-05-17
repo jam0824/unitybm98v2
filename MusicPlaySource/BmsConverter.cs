@@ -152,8 +152,9 @@ public class BmsConverter : MonoBehaviour
                         loadMovie(command[0], music_folder + "/" + command[1]);
                         continue;
                     }
-                    //画像だった場合
-                    dict_image.Add(command[0], getSprite(music_folder + "/" + command[1]));
+                    //画像だった場合で既に登録されているキー以外の場合
+                    if(!dict_image.ContainsKey(command[0]))
+                        dict_image.Add(command[0], getSprite(music_folder + "/" + command[1]));
                 }
             }
 
@@ -249,9 +250,11 @@ public class BmsConverter : MonoBehaviour
                 Debug.Log(syousetsu_no + " : 小節の長さ=" + how_long_syousetsu);
                 //音符間の所要フレーム数を求める
                 float how_long_onpu = how_long_syousetsu / (command[1].Length / 2);
-      
+
+                command[1] = checkDataCount(command[1]);
                 //データ部分を2バイトずつ読み込む
                 for (int i = 0; i < command[1].Length; i += 2) {
+                    
                     string wav = command[1].Substring(i, 2);
                     if (wav != "00") {
                         int key_frame = Mathf.RoundToInt(listSyousetsuFrameCount[syousetsu_no] + (how_long_onpu * (i / 2)));
@@ -276,6 +279,20 @@ public class BmsConverter : MonoBehaviour
         //最終フレーム取得
         this.LastFrameNo = getLastFrame(list_music_data);
         return list_music_data;
+    }
+
+    //楽譜データが2バイトか確認。
+    private string checkDataCount(string data) {
+        if(data.Length % 2 == 0) {
+            return data;
+        }
+        else {
+            Debug.Log("Music Data Length error : " + data);
+            int len = data.Length - 1;
+            return data.Substring(0, len);
+        }
+
+
     }
 
     private void countTotalNotes(int key_no) {
