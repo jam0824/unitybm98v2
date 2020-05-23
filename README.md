@@ -27,6 +27,9 @@ You can play the game with those files.
 You can check this game at youtube.  
 
 [![](https://img.youtube.com/vi/QlTms1lmWTw/0.jpg)](https://www.youtube.com/watch?v=QlTms1lmWTw)
+  
+**Third person view**  
+[![](https://img.youtube.com/vi/HZk35F2jPxk/0.jpg)](https://www.youtube.com/watch?v=HZk35F2jPxk)
 
 * * *  
   
