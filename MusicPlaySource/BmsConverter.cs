@@ -383,6 +383,7 @@ public class BmsConverter : MonoBehaviour
                     }
                     else {
                         int changedFrame = Mathf.RoundToInt((frame_no - key_frame) / BpmRate) + key_frame;
+                        Debug.Log("key_no : " + key_no + " changedFrame : " + changedFrame);
                         list_changed[key_no, changedFrame] = list_music_data[key_no, frame_no];
                     }
                 }
