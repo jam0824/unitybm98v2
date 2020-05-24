@@ -27,6 +27,7 @@ public class MusicSelectManager : MonoBehaviour
     private BmsInformationLoader bmsInformationLoader;
     private MusicSelect musicSelect;
     private MusicSelectSaveFileLoader musicSelectSaveFileLoader;
+    private MusicPlayAvator musicPlayAvator;
 
     private List<Dictionary<string, string>> listSaveData;
     private List<GameObject> listRecordObject;
@@ -47,6 +48,7 @@ public class MusicSelectManager : MonoBehaviour
     private int oldFolderCount = -1;
 
     private string category = "None";
+    private bool isAvator = false;
 
     public Dictionary<string, string> getDictMusicData() {
         return listMusicDict[folderCount];
@@ -72,6 +74,10 @@ public class MusicSelectManager : MonoBehaviour
         this.category = category;
     }
 
+    public void setAvator(bool isAvator) {
+        this.isAvator = isAvator;
+    }
+
     void Start()
     {
         bool isOk = false;
@@ -79,6 +85,11 @@ public class MusicSelectManager : MonoBehaviour
             MUSIC_FOLDER_PATH = config.getFolderPath();
         musicSelect = this.GetComponent<MusicSelect>();
         musicSelectSaveFileLoader = this.GetComponent<MusicSelectSaveFileLoader>();
+        musicPlayAvator = this.GetComponent<MusicPlayAvator>();
+        //もしavatorがtrueならオブジェクトをアクティブにする
+        if (isAvator)
+            isAvator = musicPlayAvator.changeAvatorMode();
+
         //全描画
         isOk = allRedraw(MUSIC_FOLDER_PATH);
 
@@ -206,6 +217,11 @@ public class MusicSelectManager : MonoBehaviour
             if (stickR.x != 0) {
                 moveRecords(stickR.x, MIN_SHOE_RECORD_X, MAX_SHOE_RECORD_X);
             }
+
+            //左手スタートボタンでAvatorモードに切り替え
+            if (OVRInput.GetDown(OVRInput.Button.Start)) {
+                this.isAvator = musicPlayAvator.changeAvatorMode();
+            }
             musicSelect.showInfomation(listMusicDict[folderCount]);
             moveSelectCircle();
         }
@@ -318,6 +334,7 @@ public class MusicSelectManager : MonoBehaviour
         musicPlayManager.TotalCalorie = this.totalCalorie;
         musicPlayManager.setFolderCount(this.folderCount);
         musicPlayManager.Category = this.category;
+        musicPlayManager.setAvator(this.isAvator);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
@@ -418,6 +435,7 @@ public class MusicSelectManager : MonoBehaviour
         musicSelectManager.setFolderCount(0);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
+        musicSelectManager.setAvator(this.isAvator);
         SceneManager.sceneLoaded -= GameSceneReloaded;
     }
     private IEnumerator reloadDelayMethod(float waitTime) {

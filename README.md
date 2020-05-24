@@ -38,6 +38,7 @@ You can check this game at youtube.
 - [How to play](#How-to-play)
 - [How to create music categories](#How-to-create-music-categories)
 - [How to play BMS with MPG in the background](#How-to-play-BMS-with-MPG-in-the-background)
+- [Avatar mode](#Avatar-mode)
 - [History](#History)
   
 * * *
@@ -122,9 +123,25 @@ So, you need to convert mpg to mp4.
 After converting to mp4, you need to modify the #BMP "filename" part in the bms/bme/bml file.  
   
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200510/20200510095659.png)
+
+* * *
+
+## Avatar mode  
+I added the Avator just because I wanted to shot in third person perspective.  
+Use the start button on the left hand side of the oculus quest (the button in the middle) to toggle the avatar display.  
+See below for a third-person perspective shot in Oculs Quest.
+https://developer.oculus.com/documentation/mrc/mr-quest-rigs/
+
+![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200524/20200524121446.png)
+  
+This game uses Unity-chan Avatar.  
+<https://unity-chan.com/>  
+![](https://unity-chan.com/images/imageLicenseLogo.png)  
+この作品はユニティちゃんライセンス条項の元に提供されています
   
 
 ## History
+- 20200524 : Added Avator mode, Extend the maximum song time to 100,000 frames, Changed to skip the last data if the data part is not a multiple of 2, BMP declarations are skipped when they are duplicated
 - 20200516 : Added category function, added rank function, fixed a bug where MusicBall slips through, fixed a bug where MusicBall flies to another place, set the recovery rate of power low.
 - 20200510 : MP4 is now supported.
 - 20200509_2 : Bug fix : Fixed moving records bug.(There was something wrong with the way the records were arranged.)

@@ -37,6 +37,7 @@ public class MusicPlayManager : MonoBehaviour
     private MusicPlay musicPlay;
     private MusicPlayPower musicPlayPower;
     private MusicPlayData musicPlayData;
+    private MusicPlayAvator musicPlayAvator;
     private AnimationManager animationManager;
 
     private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
@@ -58,6 +59,7 @@ public class MusicPlayManager : MonoBehaviour
     private string MUSIC_FOLDER_PATH = "D:/download/game/bm98/music/";
     private int folderCount = 0; //選択した曲番号
     private string category = ""; //引継ぎ用のカテゴリーラベル保持
+    private bool isAvator = false;
 
     //別のシーンから呼ばれた時に入れる
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
@@ -111,6 +113,9 @@ public class MusicPlayManager : MonoBehaviour
     public void setFolderCount(int folderCount) {
         this.folderCount = folderCount;
     }
+    public void setAvator(bool isAvator) {
+        this.isAvator = isAvator;
+    }
     
     
 
@@ -140,6 +145,7 @@ public class MusicPlayManager : MonoBehaviour
         musicPlay = this.GetComponent<MusicPlay>();
         musicPlayPower = this.GetComponent<MusicPlayPower>();
         musicPlayData = this.GetComponent<MusicPlayData>();
+        musicPlayAvator = this.GetComponent<MusicPlayAvator>();
         animationManager = GameObject.Find("AnimationManager").GetComponent<AnimationManager>();
         //MUSIC_FOLDER_PATH = config.getFolderPath();
         MUSIC_OBJ_Y = getMusicObjectY();
@@ -149,6 +155,9 @@ public class MusicPlayManager : MonoBehaviour
             this.music_folder = dictMusicData["music_folder"];
             this.music_bms = dictMusicData["music_bms"];
         }
+        //もしisAvatorがtrueなら表示させる
+        if(isAvator)
+            isAvator = musicPlayAvator.changeAvatorMode();
     }
     //ハイスコアなどを呼び出す
     private void setMusicData(Dictionary<string, string> dictMusicData) {
@@ -238,7 +247,13 @@ public class MusicPlayManager : MonoBehaviour
             returnMusicSelectScene();
         }
 
-        
+        //左手スタートボタンでAvatorモードに切り替え
+        if (OVRInput.GetDown(OVRInput.Button.Start)){
+            this.isAvator = musicPlayAvator.changeAvatorMode();
+        }
+
+
+
     }
     //成功時の曲終了処理
     void finish() {
@@ -285,6 +300,7 @@ public class MusicPlayManager : MonoBehaviour
         musicSelectManager.setFolderCount(this.folderCount);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
+        musicSelectManager.setAvator(this.isAvator);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
