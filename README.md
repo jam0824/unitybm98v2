@@ -127,11 +127,11 @@ After converting to mp4, you need to modify the #BMP "filename" part in the bms/
 * * *
 
 ## Avatar mode  
-I added the Avator just because I wanted to shot in third person perspective.  
+I added the Avatar just because I wanted to shot in third person perspective.  
 Use the start button on the left hand side of the oculus quest (the button in the middle) to toggle the avatar display.  
-See below for a third-person perspective shot in Oculs Quest.
-https://developer.oculus.com/documentation/mrc/mr-quest-rigs/
-
+See below for a third-person perspective shot in Oculs Quest.  
+<https://developer.oculus.com/documentation/mrc/mr-quest-rigs/>  
+  
 ![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200524/20200524121446.png)
   
 This game uses Unity-chan Avatar.  
