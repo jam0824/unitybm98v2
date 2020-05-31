@@ -19,7 +19,7 @@ public class MusicPlayPower : MonoBehaviour
     private float excellent = 1.0f;
     private float great = 0.5f;
     private float good = 0.2f;
-    private float poor = -20.0f;
+    private float poor = -10.0f;
 
     private string status = "blue";
 

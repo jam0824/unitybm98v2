@@ -17,6 +17,7 @@ public class BmsConverter : MonoBehaviour
     private int playKeyNum = 5;
 
     Dictionary<string, string> dicChangeChars;
+    Dictionary<string, float> dicBpm;
 
     private string beforeChar = "#";
     private string afterChar = "xxx";
@@ -73,6 +74,28 @@ public class BmsConverter : MonoBehaviour
         return dict_info;
     }
 
+    //拡張BPMをdictに格納
+    public void readBpm(string[] list_string) {
+        dicBpm = new Dictionary<string, float>();
+        foreach (string line in list_string) {
+            string tmpLine = line.ToLower();
+            if (Regex.IsMatch(tmpLine, "^#bpm[0-9a-z]+ ?.+$")) {
+                
+                string tmp = tmpLine.Replace("#bpm", "");
+                int index = tmp.IndexOf(" ");
+                string key = tmp.Substring(0, index);
+                string value = tmp.Substring(index + 1);
+                try {
+                    dicBpm.Add(key, float.Parse(value));
+                }
+                catch (Exception e) {
+                    Debug.LogError("拡張BPM" + value + "が不正です");
+                    Debug.LogError(e);
+                }
+            }
+        }
+    }
+
     //曲ファイルをdictに格納
     public Dictionary<string, AudioClip> readAudioFiles(string[] list_string, string music_folder) {
         Dictionary<string, AudioClip> dic_audio = new Dictionary<string, AudioClip>();
@@ -86,6 +109,7 @@ public class BmsConverter : MonoBehaviour
                 int index = tmp.IndexOf(" ");
                 string key = tmp.Substring(0, index);
                 string value = tmp.Substring(index + 1);
+                value = value.Replace("\\", "/");
 
                 //ファイル名に使えない文字列が入っていたら変換する
                 value = changeNotUsingChar(value);
@@ -141,25 +165,39 @@ public class BmsConverter : MonoBehaviour
             if ((line.Contains("#BMP")) || (line.Contains("#bmp"))) {
                 string tmp = line.Replace("#BMP", "");
                 tmp = tmp.Replace("#bmp", "");
-                string[] command = tmp.Split(' ');
-                if (fileController.isFileExist(music_folder + "/" + command[1])) {
+                int index = tmp.IndexOf(" ");
+                string key = tmp.Substring(0, index);
+                string value = tmp.Substring(index + 1);
+                value = value.Replace("\\", "/");
+                if (fileController.isFileExist(music_folder + "/" + value)) {
                     //読み込めない動画だった場合は何もしない
-                    if ((command[1].Contains(".mpg")) || (command[1].Contains(".mpeg"))) {
+                    if ((value.Contains(".mp4")) || 
+                        (value.Contains(".mpg")) ||
+                        (value.Contains(".avi")) ||
+                        (value.Contains(".wmv")) ||
+                        (value.Contains(".mpeg"))) {
+                        value = exchangeExtention(value);
+                        loadMovie(key, music_folder + "/" + value);
                         continue;
                     }
-                    else if (command[1].Contains(".mp4")) {
-                        //mp4なら読み込む
-                        loadMovie(command[0], music_folder + "/" + command[1]);
-                        continue;
-                    }
+               
                     //画像だった場合で既に登録されているキー以外の場合
-                    if(!dict_image.ContainsKey(command[0]))
-                        dict_image.Add(command[0], getSprite(music_folder + "/" + command[1]));
+                    if(!dict_image.ContainsKey(key))
+                        dict_image.Add(key, getSprite(music_folder + "/" + value));
                 }
             }
 
         }
         return dict_image;
+    }
+
+    //拡張子をmp4に変換
+    private string exchangeExtention(string fileName) {
+        string[] listExtention = { ".mpg", ".mpeg", ".avi", ".wmv" };
+        foreach (string extention in listExtention) {
+            fileName = fileName.Replace(extention, ".mp4");
+        }
+        return fileName;
     }
 
     //動画は予めurlを入れてスタンバイさせておく
@@ -355,6 +393,15 @@ public class BmsConverter : MonoBehaviour
                     //BPM変更だったら
                     if (key_no == 3) {
                         int changedBpm = Convert.ToInt32(list_music_data[key_no, frame_no], 16);
+                        float bpmRate = (float)changedBpm / (float)BPM;
+                        Debug.Log("Frame:" + frame_no + " BPM:" + BPM + " chandedBpm:" + changedBpm + " rate:" + bpmRate);
+                        list_music_data = changeBpmMain(list_music_data, bpmRate, frame_no);
+                        BPM = (float)changedBpm;
+                    }
+                    //拡張BPMだったら
+                    else if(key_no == 8) {
+                        string id = list_music_data[key_no, frame_no];
+                        float changedBpm = dicBpm[id];
                         float bpmRate = (float)changedBpm / (float)BPM;
                         Debug.Log("Frame:" + frame_no + " BPM:" + BPM + " chandedBpm:" + changedBpm + " rate:" + bpmRate);
                         list_music_data = changeBpmMain(list_music_data, bpmRate, frame_no);

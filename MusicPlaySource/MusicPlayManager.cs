@@ -53,6 +53,7 @@ public class MusicPlayManager : MonoBehaviour
     private int frameCount = 0; //frame数計算
     private float bpmChangeRate = 1.0f; //BPM変更の際に使用
     private float totalCalorie = 0;
+    private int totalFrameCount = 0;
     private bool isUpdate = false;
     private bool isGaming = true;
 
@@ -60,6 +61,7 @@ public class MusicPlayManager : MonoBehaviour
     private int folderCount = 0; //選択した曲番号
     private string category = ""; //引継ぎ用のカテゴリーラベル保持
     private bool isAvator = false;
+    private int lastFrameNo;
 
     //別のシーンから呼ばれた時に入れる
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
@@ -74,6 +76,9 @@ public class MusicPlayManager : MonoBehaviour
     }
     public int getKeyNum() {
         return this.KEY_NUM;
+    }
+    public int getFrameCount() {
+        return this.frameCount;
     }
     
     public int getMaxObjNum() {
@@ -116,6 +121,9 @@ public class MusicPlayManager : MonoBehaviour
     public void setAvator(bool isAvator) {
         this.isAvator = isAvator;
     }
+    public int getLastFrameNo() {
+        return this.lastFrameNo;
+    }
     
     
 
@@ -126,6 +134,10 @@ public class MusicPlayManager : MonoBehaviour
     public float TotalCalorie {
         get { return this.totalCalorie; }
         set { this.totalCalorie = value; }
+    }
+    public int TotalFrameCount {
+        get { return this.totalFrameCount; }
+        set { this.totalFrameCount = value; }
     }
     public string Category {
         set { this.category = value; }
@@ -180,6 +192,9 @@ public class MusicPlayManager : MonoBehaviour
         //インフォメーション部分読み込み
         dict_info = bmsConverter.getInfomation(lines);
         BPM = float.Parse(dict_info["#BPM"]);
+        //拡張BPM読み込み
+        bmsConverter.readBpm(lines);
+
         //曲データを作成
         musicPlay.setListMusicData(
             bmsConverter.makeMusicData(
@@ -207,7 +222,9 @@ public class MusicPlayManager : MonoBehaviour
 
         //パワーの計算
         Debug.Log("maxnotes : " + musicPlayData.getTotalNotesNum());
-        Debug.Log("最終フレーム : " + bmsConverter.LastFrameNo);
+
+        this.lastFrameNo = bmsConverter.LastFrameNo;
+        Debug.Log("最終フレーム : " + this.lastFrameNo);
         musicPlayPower.calcPower();
         isUpdate = true;
     }
@@ -234,7 +251,7 @@ public class MusicPlayManager : MonoBehaviour
             }
             
             //成功時の終了判定(曲終了5秒後)
-            if (frameCount == bmsConverter.LastFrameNo + (FRAME_RATE * 5)) {
+            if (frameCount == this.lastFrameNo + (FRAME_RATE * 5)) {
                 finish();
             }
             frameCount++;
@@ -298,6 +315,7 @@ public class MusicPlayManager : MonoBehaviour
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(totalCalorie);
         musicSelectManager.setFolderCount(this.folderCount);
+        musicSelectManager.setTotalFrameCount(this.totalFrameCount + this.lastFrameNo);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
         musicSelectManager.setAvator(this.isAvator);

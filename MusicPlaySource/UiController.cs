@@ -11,6 +11,7 @@ public class UiController : MonoBehaviour
     private Text calorieText;
     private Text metsText;
     private Text scoreText;
+    private Text timeText;
     private Dictionary<string, Sprite> dict_image;
     private Dictionary<string, GameObject> dict_object;
     private string status = "";
@@ -30,6 +31,7 @@ public class UiController : MonoBehaviour
         calorieText = GameObject.Find("CalorieArea").GetComponent<Text>();
         metsText = GameObject.Find("METsArea").GetComponent<Text>();
         scoreText = GameObject.Find("ScoreArea").GetComponent<Text>();
+        timeText = GameObject.Find("TimeArea").GetComponent<Text>();
         dict_object = new Dictionary<string, GameObject>();
         GameObject state = GameObject.Find("UiStateObject");
         dict_object.Add("state", state);
@@ -53,9 +55,14 @@ public class UiController : MonoBehaviour
     void Update()
     {
         updateSpriteArea();
-        calorieText.text = redrawCalorieText();
-        metsText.text = redrawMetsText();
         scoreText.text = redrawScore();
+
+        if (musicPlayManager.getFrameCount() % musicPlayManager.FRAME_RATE == 0) {
+            calorieText.text = redrawCalorieText();
+            metsText.text = redrawMetsText();
+            timeText.text = redrawTime();
+        }
+        
     }
 
     private string redrawScore() {
@@ -180,5 +187,16 @@ public class UiController : MonoBehaviour
         float mets = musicPlayData.METs;
 
         return mets.ToString("f1") + " METs";
+    }
+
+    string redrawTime() {
+        int remainingTime = musicPlayManager.getLastFrameNo() - musicPlayManager.getFrameCount();
+        if (remainingTime < 0) return "0:00";
+
+        int allSec = Mathf.CeilToInt((float)remainingTime / musicPlayManager.FRAME_RATE);
+        int min = Mathf.FloorToInt(allSec / 60);
+        int sec = allSec % 60;
+        string strSec = (sec < 10) ? "0" + sec.ToString() : sec.ToString();
+        return min.ToString() + ":" + strSec;
     }
 }

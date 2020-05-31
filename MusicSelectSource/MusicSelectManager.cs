@@ -45,6 +45,7 @@ public class MusicSelectManager : MonoBehaviour
     private float selectCircleAng = 0;
 
     private float totalCalorie = 0;
+    private int totalFrameCount = 0;
     private int oldFolderCount = -1;
 
     private string category = "None";
@@ -56,6 +57,9 @@ public class MusicSelectManager : MonoBehaviour
 
     public void setTotalCalorie(float calorie) {
         this.totalCalorie = calorie;
+    }
+    public void setTotalFrameCount(int lastFrameNo) {
+        this.totalFrameCount = lastFrameNo;
     }
 
     public void setFolderCount(int folderCount) {
@@ -138,6 +142,8 @@ public class MusicSelectManager : MonoBehaviour
 
         //トータルカロリー表示
         showTotalCalorie(this.totalCalorie);
+        //総プレイ時間表示
+        showTotalTime(this.totalFrameCount);
         return isOk;
     }
 
@@ -331,10 +337,12 @@ public class MusicSelectManager : MonoBehaviour
         MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayManager.setMusicCategoryFolderPath(this.MUSIC_FOLDER_PATH);
         musicPlayManager.setDictMusicData(listMusicDict[folderCount]);
-        musicPlayManager.TotalCalorie = this.totalCalorie;
         musicPlayManager.setFolderCount(this.folderCount);
         musicPlayManager.Category = this.category;
         musicPlayManager.setAvator(this.isAvator);
+
+        musicPlayManager.TotalCalorie = this.totalCalorie;
+        musicPlayManager.TotalFrameCount = this.totalFrameCount;
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 
@@ -392,8 +400,26 @@ public class MusicSelectManager : MonoBehaviour
         playSe(audioClip);
     }
 
+    //カロリー表示
     private void showTotalCalorie(float totalCalorie) {
         GameObject.Find("TotalCalorieText").GetComponent<Text>().text = totalCalorie.ToString("f1") + " kcal";
+    }
+
+    //総プレイ時間表示
+    private void showTotalTime(int totalFrameCount) {
+        string t = "";
+        if(totalFrameCount == 0) {
+            t = "0:00";
+        }
+        else {
+            int allSec = Mathf.CeilToInt(totalFrameCount / 72);
+            int min = Mathf.FloorToInt(allSec / 60);
+            int sec = allSec % 60;
+            string strSec = (sec < 10) ? "0" + sec.ToString() : sec.ToString();
+            t = min.ToString() + ":" + strSec;
+        }
+        
+        GameObject.Find("TotalTimeText").GetComponent<Text>().text = t;
     }
 
     //表示する曲番号の配列を作る。中央値、曲ナンバーの最大値
@@ -432,6 +458,7 @@ public class MusicSelectManager : MonoBehaviour
         // シーン切り替え後のスクリプトを取得
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(this.totalCalorie);
+        musicSelectManager.setTotalFrameCount(this.totalFrameCount);
         musicSelectManager.setFolderCount(0);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
