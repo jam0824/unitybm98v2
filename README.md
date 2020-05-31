@@ -141,6 +141,7 @@ This game uses Unity-chan Avatar.
   
 
 ## History
+- 20200531 : Set damage low, display play time, remove noise through audio mixier, support extended BPM (09), load video in mp4 no matter what the bms says.
 - 20200524 : Added Avator mode, Extend the maximum song time to 100,000 frames, Changed to skip the last data if the data part is not a multiple of 2, BMP declarations are skipped when they are duplicated
 - 20200516 : Added category function, added rank function, fixed a bug where MusicBall slips through, fixed a bug where MusicBall flies to another place, set the recovery rate of power low.
 - 20200510 : MP4 is now supported.
