@@ -39,6 +39,8 @@ You can check this game at youtube.
 - [How to create music categories](#How-to-create-music-categories)
 - [How to play BMS with MPG in the background](#How-to-play-BMS-with-MPG-in-the-background)
 - [Avatar mode](#Avatar-mode)
+- [Random select mode](#Random-select-mode)
+- [About the music folder cache](#About-the-music-folder-cache)
 - [History](#History)
   
 * * *
@@ -138,9 +140,29 @@ This game uses Unity-chan Avatar.
 <https://unity-chan.com/>  
 ![](https://unity-chan.com/images/imageLicenseLogo.png)  
 この作品はユニティちゃんライセンス条項の元に提供されています
+
+* * *
+
+## Random select mode
+![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200620/20200620105518.jpg)  
+The function to do a random song selection in the selected category was implemented.  
+It is located on the left side of your screen.  
+Each category has a level, and when you select it, the song is selected at random from the level.  
+  
+* * *
+
+## About the music folder cache
+If the folder structure doesn't change, it is now cached for quick viewing.  
+When you add a new song folder, the cache will be cleared and reloaded.  
+Also, if you want to clear the cache at will, you delete listFolder.csv and listMusicDict.csv.  
+![Picture](https://cdn-ak.f.st-hatena.com/images/fotolife/m/m_training/20200620/20200620110003.png)  
+  
+
+* * *
   
 
 ## History
+- 20200620 : Added random song selection, cached folders to make them appear faster, and tweaked Music ball graphics.
 - 20200531 : Set damage low, display play time, remove noise through audio mixier, support extended BPM (09), load video in mp4 no matter what the bms says.
 - 20200524 : Added Avator mode, Extend the maximum song time to 100,000 frames, Changed to skip the last data if the data part is not a multiple of 2, BMP declarations are skipped when they are duplicated
 - 20200516 : Added category function, added rank function, fixed a bug where MusicBall slips through, fixed a bug where MusicBall flies to another place, set the recovery rate of power low.
