@@ -77,6 +77,17 @@ namespace FileController {
             }
         }
 
+        public static bool writeFile(string filePath, string writeData) {
+            try {
+                File.WriteAllText(filePath, writeData);
+                return true;
+            }
+            catch (Exception e) {
+                Debug.LogError("Faild to write file : " + filePath);
+                return false;
+            }
+        }
+
         //ヘッダーにラベルが書いてあるcsvをList<Dictionary<string, string>>にして返す
         public static List<Dictionary<string, string>> readCsv(string filePath) {
             List<Dictionary<string, string>> listReturn = new List<Dictionary<string, string>>();

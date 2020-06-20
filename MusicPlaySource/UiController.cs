@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityBm98Utilities;
 
 public class UiController : MonoBehaviour
 {
@@ -198,5 +199,18 @@ public class UiController : MonoBehaviour
         int sec = allSec % 60;
         string strSec = (sec < 10) ? "0" + sec.ToString() : sec.ToString();
         return min.ToString() + ":" + strSec;
+    }
+
+    public void redrawTitle(Dictionary<string, string> dict_info) {
+        if (dict_info.ContainsKey("#TITLE"))
+            GameObject.Find("TitleArea").GetComponent<Text>().text = dict_info["#TITLE"];
+        if (dict_info.ContainsKey("#PLAYLEVEL")) {
+            string level = UnityBm98Utilities
+                .UnityBm98Utilities
+                .getLevel(int.Parse(dict_info["#PLAYLEVEL"]))
+                .ToUpper();
+            level = level.Replace("_", " ");
+            GameObject.Find("TitleLevelArea").GetComponent<Text>().text = level;
+        }
     }
 }

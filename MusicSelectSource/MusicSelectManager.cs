@@ -28,6 +28,7 @@ public class MusicSelectManager : MonoBehaviour
     private MusicSelect musicSelect;
     private MusicSelectSaveFileLoader musicSelectSaveFileLoader;
     private MusicPlayAvator musicPlayAvator;
+    private MusicSelectCache musicSelectCache;
 
     private List<Dictionary<string, string>> listSaveData;
     private List<GameObject> listRecordObject;
@@ -54,7 +55,9 @@ public class MusicSelectManager : MonoBehaviour
     public Dictionary<string, string> getDictMusicData() {
         return listMusicDict[folderCount];
     }
-
+    public void setListMusicDict(List<Dictionary<string, string>> listMusicDict) {
+        this.listMusicDict = listMusicDict;
+    }
     public void setTotalCalorie(float calorie) {
         this.totalCalorie = calorie;
     }
@@ -90,6 +93,7 @@ public class MusicSelectManager : MonoBehaviour
         musicSelect = this.GetComponent<MusicSelect>();
         musicSelectSaveFileLoader = this.GetComponent<MusicSelectSaveFileLoader>();
         musicPlayAvator = this.GetComponent<MusicPlayAvator>();
+        musicSelectCache = this.GetComponent<MusicSelectCache>();
         //もしavatorがtrueならオブジェクトをアクティブにする
         if (isAvator)
             isAvator = musicPlayAvator.changeAvatorMode();
@@ -149,18 +153,14 @@ public class MusicSelectManager : MonoBehaviour
 
     //セーブデータ、bmsデータを読み込んでレコードオブジェクト作成まで
     bool recordInit(string folderPath) {
-        //セーブファイルをロード
-        listSaveData = musicSelectSaveFileLoader.loadSaveData();
-        //BMSのリストを作る
-        listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(folderPath);
 
-        if(listMusicDict.Count == 0) {
-            return false;
+        if(listMusicDict == null) {
+            bool isLoad = makeListMusicDict(folderPath);
+            //0件だった場合
+            if (!isLoad) return false;
         }
-        if (SHOW_RECOED_NUM > listMusicDict.Count) SHOW_RECOED_NUM = listMusicDict.Count;
+        
 
-        //BMSのリストにセーブデータを載せる
-        listMusicDict = musicSelectSaveFileLoader.appendDataToRecords(listMusicDict, listSaveData);
         //リスト作成
         listShowRecordFolderCount = makeListShowRecord(
             showRecordMidNum,
@@ -175,7 +175,49 @@ public class MusicSelectManager : MonoBehaviour
         return true;
     }
 
-    
+    bool makeListMusicDict(string folderPath) {
+        //セーブファイルをロード
+        listSaveData = musicSelectSaveFileLoader.loadSaveData();
+
+        //音楽情報を読み込む
+        listMusicDict = readListMusicDict(folderPath);
+
+        if (listMusicDict.Count == 0) {
+            return false;
+        }
+        if (SHOW_RECOED_NUM > listMusicDict.Count) SHOW_RECOED_NUM = listMusicDict.Count;
+
+        //BMSのリストにセーブデータを載せる
+        listMusicDict = musicSelectSaveFileLoader.appendDataToRecords(listMusicDict, listSaveData);
+        return true;
+    }
+
+    List<Dictionary<string, string>> readListMusicDict(string folderPath) {
+        List<Dictionary<string, string>> listMusicDict = new List<Dictionary<string, string>>();
+        //キャッシュがない場合BMSのリストを作る
+        if (!musicSelectCache.isExistCache(folderPath)) {
+            listMusicDict = readListMusicDictSub(folderPath);
+        }
+        else {
+            //キャッシュがあった場合でも実際のフォルダの数と保持しているフォルダの数が違ったら再度読み込み
+            if (musicSelectCache.isSameCache(folderPath)) {
+                listMusicDict = musicSelectCache.loadListMusicDict(folderPath);
+            }
+            else {
+                listMusicDict = readListMusicDictSub(folderPath);
+            }
+        }
+        return listMusicDict;
+    }
+
+    List<Dictionary<string, string>> readListMusicDictSub(string folderPath) {
+        List<Dictionary<string, string>> listMusicDict = this.GetComponent<BmsInformationLoader>().getListMusicDict(folderPath);
+        musicSelectCache.saveListMusicDict(listMusicDict, folderPath);
+        musicSelectCache.saveListFolder(folderPath);
+        return listMusicDict;
+    }
+
+
 
 
     //各種入力チェック
@@ -337,6 +379,7 @@ public class MusicSelectManager : MonoBehaviour
         MusicPlayManager musicPlayManager = GameObject.Find("MusicPlayManager").GetComponent<MusicPlayManager>();
         musicPlayManager.setMusicCategoryFolderPath(this.MUSIC_FOLDER_PATH);
         musicPlayManager.setDictMusicData(listMusicDict[folderCount]);
+        musicPlayManager.setListMusicDict(listMusicDict);
         musicPlayManager.setFolderCount(this.folderCount);
         musicPlayManager.Category = this.category;
         musicPlayManager.setAvator(this.isAvator);

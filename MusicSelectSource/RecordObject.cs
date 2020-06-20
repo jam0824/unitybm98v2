@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityBm98Utilities;
 
 public class RecordObject : MonoBehaviour
 {
@@ -53,7 +54,9 @@ public class RecordObject : MonoBehaviour
                     break;
                 case "RecordMusicSelectLevel":
                     if (dictMusicData.ContainsKey("#PLAYLEVEL")) {
-                        string levelName = getLevelImageFileName(int.Parse(dictMusicData["#PLAYLEVEL"]));
+                        string levelName = UnityBm98Utilities
+                                            .UnityBm98Utilities
+                                            .getLevel(int.Parse(dictMusicData["#PLAYLEVEL"]));
                         t.GetComponent<Image>().sprite = Resources.Load<Sprite>("src/MusicSelect/" + levelName);
                     }
                     break;
@@ -125,21 +128,6 @@ public class RecordObject : MonoBehaviour
     private void playSe() {
         AudioSource audioSource = GetComponent<AudioSource>();
         audioSource.PlayOneShot(AUDIO_DECIDE);
-    }
-
-    //曲の難易度はPlayLevelから出す
-    string getLevelImageFileName(int dificurity) {
-        string level = "easy";
-        if ((dificurity >= 4) && (dificurity <= 5)) {
-            level = "normal";
-        }
-        else if ((dificurity >= 6) && (dificurity <= 7)) {
-            level = "hard";
-        }
-        else if (dificurity >= 8) {
-            level = "very_hard";
-        }
-        return level;
     }
 
     //クリックされた時の動作

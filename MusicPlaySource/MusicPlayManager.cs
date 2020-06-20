@@ -6,6 +6,7 @@ using UnityBm98Config;
 using UnityBm98Utilities;
 using FileController;
 using System.IO;
+using UnityEngine.UI;
 
 public class MusicPlayManager : MonoBehaviour
 {
@@ -41,6 +42,8 @@ public class MusicPlayManager : MonoBehaviour
     private AnimationManager animationManager;
 
     private Dictionary<string, string> dictMusicData; //MusicSelectからもらってくる曲データ
+    private List<Dictionary<string, string>> listMusicDict; //MusicSelectからもらってくる全曲リスト（速度アップ用）
+
     private float musicObjVec; //オブジェクトの速度
     private float movingDistance = 0; //今使ってない。手の移動距離
     private float BPM;
@@ -67,7 +70,9 @@ public class MusicPlayManager : MonoBehaviour
     public void setDictMusicData(Dictionary<string, string> dictMusicData) {
         this.dictMusicData = dictMusicData;
     }
-
+    public void setListMusicDict(List<Dictionary<string, string>> listMusicDict) {
+        this.listMusicDict = listMusicDict;
+    }
     public float getMusicObjY() {
         return this.MUSIC_OBJ_Y;
     }
@@ -219,6 +224,8 @@ public class MusicPlayManager : MonoBehaviour
         musicObjVec = musicPlay.setMusicObjVec(4, FRAME_RATE, BPM);
         //5 or 7 keyかを取得
         this.playKeyNum = bmsConverter.PlayKeyNum;
+        //タイトル表示
+        GameObject.Find("UiArea").GetComponent<UiController>().redrawTitle(dict_info);
 
         //パワーの計算
         Debug.Log("maxnotes : " + musicPlayData.getTotalNotesNum());
@@ -315,10 +322,11 @@ public class MusicPlayManager : MonoBehaviour
         MusicSelectManager musicSelectManager = GameObject.Find("MusicSelectManager").GetComponent<MusicSelectManager>();
         musicSelectManager.setTotalCalorie(totalCalorie);
         musicSelectManager.setFolderCount(this.folderCount);
-        musicSelectManager.setTotalFrameCount(this.totalFrameCount + this.lastFrameNo);
+        musicSelectManager.setTotalFrameCount(this.totalFrameCount + this.frameCount);
         musicSelectManager.setMusicFolderPath(this.MUSIC_FOLDER_PATH);
         musicSelectManager.setCategory(this.category);
         musicSelectManager.setAvator(this.isAvator);
+        musicSelectManager.setListMusicDict(this.listMusicDict);
         SceneManager.sceneLoaded -= GameSceneLoaded;
     }
 

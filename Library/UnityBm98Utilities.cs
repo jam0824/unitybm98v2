@@ -26,6 +26,20 @@ namespace UnityBm98Utilities {
             }
             return dict_info;
         }
+
+        public static string getLevel(int dificurity) {
+            string level = "easy";
+            if ((dificurity >= 4) && (dificurity <= 5)) {
+                level = "normal";
+            }
+            else if ((dificurity >= 6) && (dificurity <= 7)) {
+                level = "hard";
+            }
+            else if (dificurity >= 8) {
+                level = "very_hard";
+            }
+            return level;
+        }
     }
 }
 
